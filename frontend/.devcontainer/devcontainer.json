@@ -4,6 +4,13 @@
 	"features": {
 		"ghcr.io/devcontainers-contrib/features/pnpm:2": {}
 	},
+	"mounts": [
+		{
+			"source": "bitsbids-pnpm-cache",
+			"target": "/tmp/cache/pnpm",
+			"type": "volume"
+		}
+	],
 	"otherPortsAttributes": {
 		"onAutoForward": "silent"
 	},
@@ -16,5 +23,6 @@
 			]
 		}
 	},
-	"remoteUser": "vscode"
+	"remoteUser": "vscode",
+	"postCreateCommand": "bash .devcontainer/config.sh"
 }
