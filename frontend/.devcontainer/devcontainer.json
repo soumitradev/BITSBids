@@ -1,0 +1,19 @@
+{
+	"name": "BITS Bids",
+	"image": "mcr.microsoft.com/devcontainers/base:bullseye",
+	"features": {
+		"ghcr.io/devcontainers-contrib/features/pnpm:2": {}
+	},
+	"otherPortsAttributes": {
+		"onAutoForward": "silent"
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"esbenp.prettier-vscode",
+				"astro-build.astro-vscode"
+			]
+		}
+	},
+	"remoteUser": "vscode"
+}
