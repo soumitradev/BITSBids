@@ -5,11 +5,8 @@
 		"ghcr.io/devcontainers-contrib/features/pnpm:2": {}
 	},
 	"mounts": [
-		{
-			"source": "bitsbids-pnpm-cache",
-			"target": "/tmp/cache/pnpm",
-			"type": "volume"
-		}
+		"source=bitsbids-pnpm-cache,target=/tmp/cache/pnpm,type=volume",
+		"source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,readonly,type=bind"
 	],
 	"otherPortsAttributes": {
 		"onAutoForward": "silent"
