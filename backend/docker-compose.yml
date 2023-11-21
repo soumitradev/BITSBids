@@ -6,6 +6,11 @@ services:
       - .env
     ports:
       - 5432:5432
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    profiles:
+      - "migration"
+      - "backend"
   app:
     build:
       context: .
@@ -18,3 +23,16 @@ services:
     ports:
       - 5000:8080
     tty: true
+    profiles:
+      - "backend"
+  flyway:
+    image: redgate/flyway:10.0.1-alpine
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+    command: -url=jdbc:postgresql://postgres:5432/${POSTGRES_DB} -user=${POSTGRES_USER} -password=${POSTGRES_PASSWORD} -connectRetries=60 migrate
+    volumes:
+      - ./src/main/resources/db.migration.postgresql:/flyway/sql
+    profiles:
+      - "migration"
