@@ -1,0 +1,28 @@
+{
+	"name": "bitsbids",
+	"type": "module",
+	"version": "0.0.1",
+	"scripts": {
+		"astro": "astro",
+		"build": "astro build",
+		"dev": "astro dev",
+		"format": "prettier . --write",
+		"format:check": "prettier . --check",
+		"preview": "astro preview",
+		"start": "astro dev"
+	},
+	"dependencies": {
+		"@astrojs/solid-js": "^3.0.2",
+		"@astrojs/tailwind": "^5.0.2",
+		"astro": "^3.5.5",
+		"solid-js": "^1.7.11"
+	},
+	"devDependencies": {
+		"autoprefixer": "^10.4.16",
+		"postcss": "^8.4.31",
+		"postcss-import": "^15.1.0",
+		"prettier": "^3.1.0",
+		"prettier-plugin-tailwindcss": "^0.5.7",
+		"tailwindcss": "^3.3.5"
+	}
+}
