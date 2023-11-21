@@ -16,5 +16,5 @@ services:
       - postgres
     restart: unless-stopped
     ports:
-      - 6868:8080
+      - 5000:8080
     tty: true
