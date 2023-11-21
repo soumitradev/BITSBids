@@ -1,18 +1,18 @@
 package com.jamers.BITSBids.dataclasses;
 
-import java.time.LocalDateTime;
-import java.util.*;
 import org.springframework.data.annotation.Id;
 
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
 
-class Messages{
+class Messages {
 	@Id
 	private int id;
 	private int conversation_id;
 	private boolean from_buyer;
 	private String text;
 	private ArrayList<String> media;
-	private LocalDateTime sent_at;
+	private ZonedDateTime sent_at;
 
 	public int getId() {
 		return id;
@@ -50,7 +50,7 @@ class Messages{
 		this.media.add(media);
 	}
 
-	public LocalDateTime getSent_at() {
+	public ZonedDateTime getSent_at() {
 		return sent_at;
 	}
 

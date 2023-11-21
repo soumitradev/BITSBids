@@ -1,8 +1,8 @@
 package com.jamers.BITSBids.dataclasses;
 
-import java.time.LocalDateTime;
-
 import org.springframework.data.annotation.Id;
+
+import java.time.ZonedDateTime;
 
 class Bids {
 	@Id
@@ -10,7 +10,7 @@ class Bids {
 	private int product_id;
 	private int bidder_id;
 	private int price;
-	private LocalDateTime placed_at;
+	private ZonedDateTime placed_at;
 
 	public int getId() {
 		return id;
@@ -40,7 +40,7 @@ class Bids {
 		this.price = price;
 	}
 
-	public LocalDateTime getPlaced_at() {
+	public ZonedDateTime getPlaced_at() {
 		return placed_at;
 	}
 

@@ -1,8 +1,5 @@
 package com.jamers.BITSBids.dataclasses;
 
-import java.time.LocalDateTime;
-import java.util.*;
-
 import org.springframework.data.annotation.Id;
 
 class Conversations {

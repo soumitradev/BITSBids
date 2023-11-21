@@ -1,9 +1,9 @@
 package com.jamers.BITSBids.dataclasses;
 
-import java.time.LocalDateTime;
-import java.util.*;
-
 import org.springframework.data.annotation.Id;
+
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
 
 class Products {
 	@Id
@@ -16,14 +16,13 @@ class Products {
 	private int auto_sell_price;
 	private int price;
 	private boolean sold;
-	private LocalDateTime created_at;
+	private ZonedDateTime created_at;
+	private ZonedDateTime closed_at;
+	private int current_bid_id;
 
-	public LocalDateTime getClosed_at() {
+	public ZonedDateTime getClosed_at() {
 		return closed_at;
 	}
-
-	private LocalDateTime closed_at;
-	private int current_bid_id;
 
 	public int getId() {
 		return id;
@@ -93,10 +92,9 @@ class Products {
 		this.sold = sold;
 	}
 
-	public LocalDateTime getCreated_at() {
+	public ZonedDateTime getCreated_at() {
 		return created_at;
 	}
-
 
 
 	public int getCurrent_bid_id() {
