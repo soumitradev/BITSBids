@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: 'postgres:latest'
+    image: 'postgres:15.5-alpine3.18'
     restart: unless-stopped
     env_file:
       - .env
