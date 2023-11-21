@@ -9,7 +9,7 @@ class Users {
 	private String name;
 	private int batch;
 	private String room;
-	private long phone_number;
+	private long phoneNumber;
 	private float balance;
 
 	public int getId() {
@@ -48,12 +48,12 @@ class Users {
 		this.room = room;
 	}
 
-	public long getPhone_number() {
-		return phone_number;
+	public long getPhoneNumber() {
+		return phoneNumber;
 	}
 
-	public void setPhone_number(long phone_number) {
-		this.phone_number = phone_number;
+	public void setPhoneNumber(long phoneNumber) {
+		this.phoneNumber = phoneNumber;
 	}
 
 	public float getBalance() {

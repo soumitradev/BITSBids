@@ -8,30 +8,30 @@ import java.util.ArrayList;
 class Messages {
 	@Id
 	private int id;
-	private int conversation_id;
-	private boolean from_buyer;
+	private int conversationId;
+	private boolean fromBuyer;
 	private String text;
 	private ArrayList<String> media;
-	private ZonedDateTime sent_at;
+	private ZonedDateTime sentAt;
 
 	public int getId() {
 		return id;
 	}
 
-	public int getConversation_id() {
-		return conversation_id;
+	public int getConversationId() {
+		return conversationId;
 	}
 
-	public void setConversation_id(int conversation_id) {
-		this.conversation_id = conversation_id;
+	public void setConversationId(int conversationId) {
+		this.conversationId = conversationId;
 	}
 
-	public boolean isFrom_buyer() {
-		return from_buyer;
+	public boolean isFromBuyer() {
+		return fromBuyer;
 	}
 
-	public void setFrom_buyer(boolean from_buyer) {
-		this.from_buyer = from_buyer;
+	public void setFromBuyer(boolean fromBuyer) {
+		this.fromBuyer = fromBuyer;
 	}
 
 	public String getText() {
@@ -50,8 +50,8 @@ class Messages {
 		this.media.add(media);
 	}
 
-	public ZonedDateTime getSent_at() {
-		return sent_at;
+	public ZonedDateTime getSentAt() {
+		return sentAt;
 	}
 
 }

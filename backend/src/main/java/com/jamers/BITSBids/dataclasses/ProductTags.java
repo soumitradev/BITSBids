@@ -5,23 +5,23 @@ import org.springframework.data.annotation.Id;
 class ProductTags {
 	@Id
 	private int id;
-	private int product_id;
-	private int tag_id;
+	private int productId;
+	private int tagId;
 
-	public int getProduct_id() {
-		return product_id;
+	public int getProductId() {
+		return productId;
 	}
 
-	public void setProduct_id(int product_id) {
-		this.product_id = product_id;
+	public void setProductId(int productId) {
+		this.productId = productId;
 	}
 
-	public int getTag_id() {
-		return tag_id;
+	public int getTagId() {
+		return tagId;
 	}
 
-	public void setTag_id(int tag_id) {
-		this.tag_id = tag_id;
+	public void setTagId(int tagId) {
+		this.tagId = tagId;
 	}
 
 	public int getId() {

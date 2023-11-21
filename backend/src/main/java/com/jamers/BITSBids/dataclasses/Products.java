@@ -10,18 +10,18 @@ class Products {
 	private int id;
 	private String name;
 	private String description;
-	private int seller_id;
+	private int sellerId;
 	private ArrayList<String> media;
-	private int base_price;
-	private int auto_sell_price;
+	private int basePrice;
+	private int autoSellPrice;
 	private int price;
 	private boolean sold;
-	private ZonedDateTime created_at;
-	private ZonedDateTime closed_at;
-	private int current_bid_id;
+	private ZonedDateTime createdAt;
+	private ZonedDateTime closedAt;
+	private int currentBidId;
 
-	public ZonedDateTime getClosed_at() {
-		return closed_at;
+	public ZonedDateTime getClosedAt() {
+		return closedAt;
 	}
 
 	public int getId() {
@@ -44,12 +44,12 @@ class Products {
 		this.description = description;
 	}
 
-	public int getSeller_id() {
-		return seller_id;
+	public int getSellerId() {
+		return sellerId;
 	}
 
-	public void setSeller_id(int seller_id) {
-		this.seller_id = seller_id;
+	public void setSellerId(int sellerId) {
+		this.sellerId = sellerId;
 	}
 
 	public ArrayList<String> getMedia() {
@@ -60,20 +60,20 @@ class Products {
 		this.media.add(media);
 	}
 
-	public int getBase_price() {
-		return base_price;
+	public int getBasePrice() {
+		return basePrice;
 	}
 
-	public void setBase_price(int base_price) {
-		this.base_price = base_price;
+	public void setBasePrice(int basePrice) {
+		this.basePrice = basePrice;
 	}
 
-	public int getAuto_sell_price() {
-		return auto_sell_price;
+	public int getAutoSellPrice() {
+		return autoSellPrice;
 	}
 
-	public void setAuto_sell_price(int auto_sell_price) {
-		this.auto_sell_price = auto_sell_price;
+	public void setAutoSellPrice(int autoSellPrice) {
+		this.autoSellPrice = autoSellPrice;
 	}
 
 	public int getPrice() {
@@ -92,12 +92,12 @@ class Products {
 		this.sold = sold;
 	}
 
-	public ZonedDateTime getCreated_at() {
-		return created_at;
+	public ZonedDateTime getCreatedAt() {
+		return createdAt;
 	}
 
 
-	public int getCurrent_bid_id() {
-		return current_bid_id;
+	public int getCurrentBidId() {
+		return currentBidId;
 	}
 }
