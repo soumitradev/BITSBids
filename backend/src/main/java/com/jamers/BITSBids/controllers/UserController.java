@@ -63,7 +63,6 @@ public class UserController {
 			);
 		}
 
-
 		if (principal.getAttribute("name") == null || Objects.requireNonNull(principal.getAttribute("name")).toString().isEmpty() || Objects.requireNonNull(
 						principal.getAttribute("name")).toString().isBlank()) {
 			return new ResponseEntity<GenericResponseType>(
@@ -85,7 +84,10 @@ public class UserController {
 			);
 		}
 
-		Pattern pattern = Pattern.compile("f(\\d{4})\\d{4}@hyderabad.bits-pilani.ac.in", Pattern.CASE_INSENSITIVE);
+		Pattern pattern = Pattern.compile(
+						"f(\\d{4})\\d{4}@(hyderabad|goa|pilani).bits-pilani.ac.in",
+						Pattern.CASE_INSENSITIVE
+		);
 		Matcher matcher = pattern.matcher(Objects.requireNonNull(principal.getAttribute("email")));
 		if (matcher.find()) {
 			int batch = 0;
