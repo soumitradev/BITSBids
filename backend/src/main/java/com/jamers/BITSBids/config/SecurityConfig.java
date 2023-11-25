@@ -21,7 +21,7 @@ public class SecurityConfig {
 										AbstractHttpConfigurer::disable) // TODO: Remove this line in production
 						.exceptionHandling(exceptionHandling -> exceptionHandling.defaultAuthenticationEntryPointFor(
 										(request, response, accessDeniedException) -> {
-											response.setStatus(403);
+											response.setStatus(401);
 										},
 										new RequestHeaderRequestMatcher("X-Requested-With", "BITSBids-Frontend")
 						)).httpBasic(Customizer.withDefaults()).build();
