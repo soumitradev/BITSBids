@@ -8,7 +8,7 @@ import java.util.Map;
 
 @RestController
 public class TestController {
-	@GetMapping("/api/test")
+	@GetMapping("/test")
 	public Map<String, String> test() {
 		return Collections.singletonMap("message", "Hello, World!");
 	}
