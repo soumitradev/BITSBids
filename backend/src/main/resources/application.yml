@@ -1,6 +1,6 @@
 spring:
   r2dbc:
-    url: r2dbc:postgresql://postgres:5432/${POSTGRES_DB}
+    url: r2dbc:postgresql://postgres:5432/${POSTGRES_DB}?schema=bitsbids
     username: ${POSTGRES_USER}
     password: ${POSTGRES_PASSWORD}
     pool:
