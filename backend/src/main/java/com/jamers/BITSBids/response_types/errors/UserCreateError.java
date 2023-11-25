@@ -14,14 +14,14 @@ public class UserCreateError extends GenericError {
 	public static UserCreateError nullEmailError() {
 		UserCreateError error = new UserCreateError();
 		error.error = "NullEmailError";
-		error.cause = "Email in UserCreateData is null";
+		error.cause = "Email in UserCreateData is empty";
 		return error;
 	}
 
 	public static UserCreateError nullNameError() {
 		UserCreateError error = new UserCreateError();
 		error.error = "NullNameError";
-		error.cause = "Name in UserCreateData is null";
+		error.cause = "Name in UserCreateData is empty";
 		return error;
 	}
 
