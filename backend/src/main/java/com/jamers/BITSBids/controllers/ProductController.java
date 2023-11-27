@@ -109,6 +109,13 @@ public class ProductController {
 					@Validated
 					@RequestBody
 					BidCreateData bidCreateData) {
+		if (principal.getAttribute("email") == null) {
+			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+							AuthUserError.nullUserError(),
+							GenericResponseType.ResponseStatus.ERROR
+			), HttpStatus.BAD_REQUEST);
+		}
+
 		final User currentUser = userRepository.findByEmail(Objects.requireNonNull(principal.getAttribute("email")).toString()).blockFirst();
 		if (currentUser == null) {
 			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
