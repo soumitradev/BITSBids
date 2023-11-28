@@ -160,9 +160,7 @@ public class UserController {
 	}
 
 	@PostMapping(
-					path = "/api/user/delete",
-					consumes = MediaType.APPLICATION_JSON_VALUE,
-					produces = MediaType.APPLICATION_JSON_VALUE
+					path = "/api/user/delete"
 	)
 	public ResponseEntity<GenericResponseType> delete(
 					@AuthenticationPrincipal
