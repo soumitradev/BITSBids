@@ -139,7 +139,7 @@ public class UserController {
 						principal.getAttribute("email")).toString().isBlank()) {
 			return new ResponseEntity<GenericResponseType>(
 							new GenericResponseType(
-											UserCreateError.nullEmailError(),
+											AuthUserError.nullEmailError(),
 											GenericResponseType.ResponseStatus.ERROR
 							),
 							HttpStatus.BAD_REQUEST
@@ -149,7 +149,7 @@ public class UserController {
 
 		if (currentUser == null) {
 			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
-							AuthUserError.nullUserError(),
+							AuthUserError.userNotFoundError(),
 							GenericResponseType.ResponseStatus.ERROR
 			), HttpStatus.BAD_REQUEST);
 		}
