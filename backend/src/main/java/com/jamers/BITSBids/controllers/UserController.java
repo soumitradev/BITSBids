@@ -142,7 +142,7 @@ public class UserController {
 											AuthUserError.nullEmailError(),
 											GenericResponseType.ResponseStatus.ERROR
 							),
-							HttpStatus.BAD_REQUEST
+							HttpStatus.UNAUTHORIZED
 			);
 		}
 		final User currentUser = userRepository.findByEmail(Objects.requireNonNull(principal.getAttribute("email")).toString()).blockFirst();
@@ -151,7 +151,7 @@ public class UserController {
 			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
 							AuthUserError.userNotFoundError(),
 							GenericResponseType.ResponseStatus.ERROR
-			), HttpStatus.BAD_REQUEST);
+			), HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<GenericResponseType>(new GenericResponseType(
 						currentUser,
@@ -171,7 +171,7 @@ public class UserController {
 						principal.getAttribute("email")).toString().isBlank()) {
 			return new ResponseEntity<GenericResponseType>(
 							new GenericResponseType(
-											UserCreateError.nullEmailError(),
+											AuthUserError.nullEmailError(),
 											GenericResponseType.ResponseStatus.ERROR
 							),
 							HttpStatus.BAD_REQUEST
