@@ -3,8 +3,11 @@ package com.jamers.BITSBids.controllers;
 import com.jamers.BITSBids.models.User;
 import com.jamers.BITSBids.repositories.UserRepository;
 import com.jamers.BITSBids.request_models.UserCreateData;
+import com.jamers.BITSBids.request_models.UserEditData;
 import com.jamers.BITSBids.response_types.GenericResponseType;
+import com.jamers.BITSBids.response_types.errors.AuthUserError;
 import com.jamers.BITSBids.response_types.errors.UserCreateError;
+import com.jamers.BITSBids.response_types.errors.UserEditError;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -12,10 +15,12 @@ import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigInteger;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -125,4 +130,130 @@ public class UserController {
 			);
 		}
 	}
+
+	@GetMapping("/api/user/me")
+	public ResponseEntity<GenericResponseType> getMe(
+					@AuthenticationPrincipal
+					OAuth2User principal) {
+		if (principal.getAttribute("email") == null || Objects.requireNonNull(principal.getAttribute("email")).toString().isEmpty() || Objects.requireNonNull(
+						principal.getAttribute("email")).toString().isBlank()) {
+			return new ResponseEntity<GenericResponseType>(
+							new GenericResponseType(
+											AuthUserError.nullEmailError(),
+											GenericResponseType.ResponseStatus.ERROR
+							),
+							HttpStatus.UNAUTHORIZED
+			);
+		}
+		final User currentUser = userRepository.findByEmail(Objects.requireNonNull(principal.getAttribute("email")).toString()).blockFirst();
+
+		if (currentUser == null) {
+			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+							AuthUserError.userNotFoundError(),
+							GenericResponseType.ResponseStatus.ERROR
+			), HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+						currentUser,
+						GenericResponseType.ResponseStatus.SUCCESS
+		), HttpStatus.ACCEPTED);
+	}
+
+	@PostMapping(
+					path = "/api/user/delete"
+	)
+	public ResponseEntity<GenericResponseType> delete(
+					@AuthenticationPrincipal
+					OAuth2User principal) {
+		if (principal.getAttribute("email") == null || Objects.requireNonNull(principal.getAttribute("email")).toString().isEmpty() || Objects.requireNonNull(
+						principal.getAttribute("email")).toString().isBlank()) {
+			return new ResponseEntity<GenericResponseType>(
+							new GenericResponseType(
+											AuthUserError.nullEmailError(),
+											GenericResponseType.ResponseStatus.ERROR
+							),
+							HttpStatus.BAD_REQUEST
+			);
+		}
+		final User currentUser = userRepository.findByEmail(Objects.requireNonNull(principal.getAttribute("email")).toString()).blockFirst();
+		if (currentUser == null) {
+			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+							AuthUserError.nullUserError(),
+							GenericResponseType.ResponseStatus.ERROR
+			), HttpStatus.BAD_REQUEST);
+		} else {
+			return new ResponseEntity<GenericResponseType>(
+							new GenericResponseType(
+											userRepository.delete(currentUser).block(),
+											GenericResponseType.ResponseStatus.SUCCESS
+							),
+							HttpStatus.ACCEPTED
+			);
+		}
+	}
+
+	@PostMapping(
+					path = "/api/user/edit",
+					consumes = MediaType.APPLICATION_JSON_VALUE,
+					produces = MediaType.APPLICATION_JSON_VALUE
+	)
+	public ResponseEntity<GenericResponseType> edit(
+					@AuthenticationPrincipal
+					OAuth2User principal,
+					@RequestBody
+					@Validated
+					UserEditData userEditData) {
+		if (principal.getAttribute("email") == null || Objects.requireNonNull(principal.getAttribute("email")).toString().isEmpty() || Objects.requireNonNull(
+						principal.getAttribute("email")).toString().isBlank()) {
+			return new ResponseEntity<GenericResponseType>(
+							new GenericResponseType(
+											UserCreateError.nullEmailError(),
+											GenericResponseType.ResponseStatus.ERROR
+							),
+							HttpStatus.BAD_REQUEST
+			);
+		}
+		final User currentUser = userRepository.findByEmail(Objects.requireNonNull(principal.getAttribute("email")).toString()).blockFirst();
+		if (currentUser == null) {
+			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+							AuthUserError.nullUserError(),
+							GenericResponseType.ResponseStatus.ERROR
+			), HttpStatus.BAD_REQUEST);
+		}
+		if (userEditData == null) {
+			return new ResponseEntity<GenericResponseType>(
+							new GenericResponseType(
+											UserEditError.nullFieldsError(),
+											GenericResponseType.ResponseStatus.ERROR
+							),
+							HttpStatus.BAD_REQUEST
+			);
+		}
+
+		String newRoom = currentUser.room();
+		BigInteger newPhoneNumber = currentUser.phoneNumber();
+
+		if (userEditData.room() != null) {
+			newRoom = userEditData.room();
+		}
+		if (userEditData.phoneNumber() != null) {
+			newPhoneNumber = userEditData.phoneNumber();
+		}
+
+		User user = new User(
+						currentUser.id(),
+						currentUser.email(),
+						currentUser.name(),
+						currentUser.batch(),
+						newRoom,
+						newPhoneNumber,
+						currentUser.balance()
+		);
+
+		return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+						userRepository.save(user).block(),
+						GenericResponseType.ResponseStatus.SUCCESS
+		), HttpStatus.ACCEPTED);
+	}
 }
+
