@@ -20,6 +20,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Objects;
+import java.util.ArrayList;
 
 import static com.jamers.BITSBids.common.Constants.MIN_BID_DELTA;
 
@@ -283,4 +284,30 @@ public class ProductController {
 			);
 		}
 	}
+
+	@GetMapping("/api/product/latest")
+	public ResponseEntity<GenericResponseType> getLatestProducts(
+					@AuthenticationPrincipal
+					OAuth2User principal) {
+		if (principal.getAttribute("email") == null || Objects.requireNonNull(principal.getAttribute("email")).toString().isEmpty() || Objects.requireNonNull(
+						principal.getAttribute("email")).toString().isBlank()) {
+			return new ResponseEntity<GenericResponseType>(
+							new GenericResponseType(
+											AuthUserError.nullUserError(),
+											GenericResponseType.ResponseStatus.ERROR
+							),
+							HttpStatus.BAD_REQUEST
+			);
+
+		}
+		ArrayList<Product> latestProducts = productRepository.findLatestProducts().blockFirst();
+		return new ResponseEntity<GenericResponseType>(
+						new GenericResponseType(
+										latestProducts,
+										GenericResponseType.ResponseStatus.SUCCESS
+						),
+						HttpStatus.ACCEPTED
+		);
+	}
+
 }
