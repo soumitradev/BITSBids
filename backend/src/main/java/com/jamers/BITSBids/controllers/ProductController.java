@@ -119,7 +119,7 @@ public class ProductController {
 						principal.getAttribute("email")).toString().isBlank()) {
 			return new ResponseEntity<GenericResponseType>(
 							new GenericResponseType(
-											UserCreateError.nullEmailError(),
+											AuthUserError.nullUserError(),
 											GenericResponseType.ResponseStatus.ERROR
 							),
 							HttpStatus.BAD_REQUEST
@@ -202,7 +202,7 @@ public class ProductController {
 						principal.getAttribute("email")).toString().isBlank()) {
 			return new ResponseEntity<GenericResponseType>(
 							new GenericResponseType(
-											UserCreateError.nullEmailError(),
+											AuthUserError.nullUserError(),
 											GenericResponseType.ResponseStatus.ERROR
 							),
 							HttpStatus.BAD_REQUEST
@@ -232,7 +232,7 @@ public class ProductController {
 		}
 	}
 
-	@DeleteMapping("/api/product/{id}/delete")
+	@PostMapping("/api/product/{id}/delete")
 	public ResponseEntity<GenericResponseType> deleteProduct(
 					@AuthenticationPrincipal
 					OAuth2User principal,
@@ -243,7 +243,7 @@ public class ProductController {
 						principal.getAttribute("email")).toString().isBlank()) {
 			return new ResponseEntity<GenericResponseType>(
 							new GenericResponseType(
-											UserCreateError.nullEmailError(),
+											AuthUserError.nullUserError(),
 											GenericResponseType.ResponseStatus.ERROR
 							),
 							HttpStatus.BAD_REQUEST
