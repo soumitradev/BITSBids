@@ -1,7 +1,9 @@
 package com.jamers.BITSBids.controllers;
 
 import com.jamers.BITSBids.models.User;
+import com.jamers.BITSBids.models.Product;
 import com.jamers.BITSBids.repositories.UserRepository;
+import com.jamers.BITSBids.repositories.ProductRepository;
 import com.jamers.BITSBids.request_models.UserCreateData;
 import com.jamers.BITSBids.request_models.UserEditData;
 import com.jamers.BITSBids.response_types.GenericResponseType;
@@ -19,11 +21,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 import java.math.BigInteger;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.ArrayList;
 
 import static com.jamers.BITSBids.common.Constants.INITIAL_BALANCE;
 
@@ -255,5 +260,56 @@ public class UserController {
 						GenericResponseType.ResponseStatus.SUCCESS
 		), HttpStatus.ACCEPTED);
 	}
+
+	@GetMapping("/api/user/products")
+	public ResponseEntity<GenericResponseType> getMe(
+					@AuthenticationPrincipal
+					OAuth2User principal,
+					ProductRepository productRepository,
+					@RequestParam(
+									name = "active",
+									required = true
+					)
+					boolean active) {
+		if (principal.getAttribute("email") == null || Objects.requireNonNull(principal.getAttribute("email")).toString().isEmpty() || Objects.requireNonNull(
+						principal.getAttribute("email")).toString().isBlank()) {
+			return new ResponseEntity<GenericResponseType>(
+							new GenericResponseType(
+											AuthUserError.nullEmailError(),
+											GenericResponseType.ResponseStatus.ERROR
+							),
+							HttpStatus.UNAUTHORIZED
+			);
+		}
+
+
+		final User currentUser = userRepository.findByEmail(Objects.requireNonNull(principal.getAttribute("email")).toString()).blockFirst();
+		int userId = currentUser.id();
+
+		if (currentUser == null) {
+			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+							AuthUserError.nullUserError(),
+							GenericResponseType.ResponseStatus.ERROR
+			), HttpStatus.BAD_REQUEST);
+		}
+
+		if (active) {
+			ArrayList<Product> products = productRepository.findActiveProductsById(userId).blockFirst();
+			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+							products,
+							GenericResponseType.ResponseStatus.SUCCESS
+			), HttpStatus.ACCEPTED);
+
+		} else {
+			ArrayList<Product> products = productRepository.findSoldProductsById(userId).blockFirst();
+			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+							products,
+							GenericResponseType.ResponseStatus.SUCCESS
+			), HttpStatus.ACCEPTED);
+		}
+
+
+	}
+
 }
 
