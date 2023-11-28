@@ -1,15 +1,15 @@
 package com.jamers.BITSBids.controllers;
 
+import com.jamers.BITSBids.models.Bid;
 import com.jamers.BITSBids.models.Product;
 import com.jamers.BITSBids.models.User;
+import com.jamers.BITSBids.repositories.BidRepository;
 import com.jamers.BITSBids.repositories.ProductRepository;
 import com.jamers.BITSBids.repositories.UserRepository;
+import com.jamers.BITSBids.request_models.BidCreateData;
 import com.jamers.BITSBids.request_models.ProductCreateData;
 import com.jamers.BITSBids.response_types.GenericResponseType;
-import com.jamers.BITSBids.response_types.errors.AuthUserError;
-import com.jamers.BITSBids.response_types.errors.ProductCreateError;
-import com.jamers.BITSBids.response_types.errors.ProductFetchError;
-import com.jamers.BITSBids.response_types.errors.UserCreateError;
+import com.jamers.BITSBids.response_types.errors.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +17,14 @@ import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Objects;
+
+import static com.jamers.BITSBids.common.Constants.MIN_BID_DELTA;
 
 
 @RestController
@@ -27,11 +32,15 @@ public class ProductController {
 	final DatabaseClient client;
 	final ProductRepository productRepository;
 	final UserRepository userRepository;
+	final BidRepository bidRepository;
 
-	public ProductController(DatabaseClient client, ProductRepository productRepository, UserRepository userRepository) {
+	public ProductController(DatabaseClient client, ProductRepository productRepository, UserRepository userRepository,
+	                         BidRepository bidRepository) {
 		this.client = client;
 		this.productRepository = productRepository;
 		this.userRepository = userRepository;
+		this.bidRepository = bidRepository;
+
 	}
 
 	@PostMapping(
@@ -95,12 +104,19 @@ public class ProductController {
 		), HttpStatus.CREATED);
 	}
 
-	@GetMapping("/api/product/{id}")
-	public ResponseEntity<GenericResponseType> getProduct(
+	@PostMapping(
+					path = "/api/product/{id}/bid",
+					consumes = MediaType.APPLICATION_JSON_VALUE,
+					produces = MediaType.APPLICATION_JSON_VALUE
+	)
+	public ResponseEntity<GenericResponseType> createBid(
 					@AuthenticationPrincipal
 					OAuth2User principal,
 					@PathVariable
-					int id) {
+					int id,
+					@Validated
+					@RequestBody
+					BidCreateData bidCreateData) {
 
 		if (principal.getAttribute("email") == null || Objects.requireNonNull(principal.getAttribute("email")).toString().isEmpty() || Objects.requireNonNull(
 						principal.getAttribute("email")).toString().isBlank()) {
@@ -112,8 +128,8 @@ public class ProductController {
 							HttpStatus.BAD_REQUEST
 			);
 		}
-		final User currentUser = userRepository.findByEmail(Objects.requireNonNull(principal.getAttribute("email")).toString()).blockFirst();
 
+		final User currentUser = userRepository.findByEmail(Objects.requireNonNull(principal.getAttribute("email")).toString()).blockFirst();
 		if (currentUser == null) {
 			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
 							AuthUserError.nullUserError(),
@@ -123,17 +139,59 @@ public class ProductController {
 
 		final Product currentProduct = productRepository.findById(String.valueOf(id)).block();
 
-
 		if (currentProduct == null) {
 			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
 							ProductFetchError.invalidProductError(),
 							GenericResponseType.ResponseStatus.ERROR
 			), HttpStatus.BAD_REQUEST);
-		} else {
-			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
-							currentProduct,
-							GenericResponseType.ResponseStatus.SUCCESS
-			), HttpStatus.ACCEPTED);
 		}
+
+		if (bidCreateData == null) {
+			return new ResponseEntity<GenericResponseType>(
+							new GenericResponseType(
+											BidCreateError.nullBidError(),
+											GenericResponseType.ResponseStatus.ERROR
+							),
+							HttpStatus.BAD_REQUEST
+			);
+		}
+
+		Bid bid = new Bid(
+						null,
+						currentProduct.id(),
+						currentUser.id(),
+						bidCreateData.price(),
+						null
+		);
+
+
+		if (bidCreateData.price() < (1 + MIN_BID_DELTA / 100.0) * currentProduct.price()) {
+			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+							BidCreateError.invalidBidError(),
+							GenericResponseType.ResponseStatus.ERROR
+			), HttpStatus.NOT_ACCEPTABLE);
+		}
+
+		Bid currentBid = bidRepository.save(bid).block();
+		Product newProduct = new Product(
+						currentProduct.id(),
+						currentProduct.name(),
+						currentProduct.description(),
+						currentProduct.sellerId(),
+						currentProduct.media(),
+						currentProduct.basePrice(),
+						currentProduct.autoSellPrice(),
+						currentBid.price(),
+						currentProduct.sold(),
+						currentProduct.createdAt(),
+						currentProduct.closedAt(),
+						currentBid.id()
+		);
+		productRepository.save(newProduct).block();
+		return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+						currentBid,
+						GenericResponseType.ResponseStatus.SUCCESS
+		), HttpStatus.ACCEPTED);
+
 	}
 }

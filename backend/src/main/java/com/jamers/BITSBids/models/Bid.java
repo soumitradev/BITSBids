@@ -6,5 +6,5 @@ import org.springframework.data.relational.core.mapping.Table;
 import java.time.ZonedDateTime;
 
 @Table("bids")
-public record Bid(@Id int id, int productId, int bidderId, int price, ZonedDateTime placedAt) {
+public record Bid(@Id Integer id, int productId, int bidderId, int price, ZonedDateTime placedAt) {
 }
