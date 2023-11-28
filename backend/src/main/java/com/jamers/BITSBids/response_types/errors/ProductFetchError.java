@@ -4,8 +4,8 @@ public class ProductFetchError {
 	public String error;
 	public String cause;
 
-	public static ProductDeleteError invalidProductError() {
-		ProductDeleteError error = new ProductDeleteError();
+	public static ProductFetchError invalidProductError() {
+		ProductFetchError error = new ProductFetchError();
 		error.error = "InvalidProductError";
 		error.cause = "Requested Product doesn't exist";
 		return error;
