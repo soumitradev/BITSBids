@@ -3,7 +3,7 @@ CREATE SCHEMA IF NOT EXISTS bitsbids;
 CREATE TABLE bitsbids.users
 (
     id           INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY NOT NULL,
-    email        VARCHAR(255)                                     NOT NULL,
+    email        VARCHAR(255) UNIQUE                              NOT NULL,
     name         VARCHAR(255)                                     NOT NULL,
     batch        INTEGER                                          NOT NULL,
     room         VARCHAR(255)                                     NOT NULL,
@@ -40,7 +40,7 @@ CREATE TABLE bitsbids.product_tags
     id         INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY NOT NULL,
     product_id INTEGER                                          NOT NULL,
     tag_id     INTEGER                                          NOT NULL,
-    CONSTRAINT fk_product_tags_product_id FOREIGN KEY (product_id) REFERENCES bitsbids.products (id),
+    CONSTRAINT fk_product_tags_product_id FOREIGN KEY (product_id) REFERENCES bitsbids.products (id) ON DELETE CASCADE,
     CONSTRAINT fk_product_tags_tag_id FOREIGN KEY (tag_id) REFERENCES bitsbids.tags (id)
 );
 
@@ -56,7 +56,7 @@ CREATE TABLE bitsbids.category_products
     category_id INTEGER                                          NOT NULL,
     product_id  INTEGER                                          NOT NULL,
     CONSTRAINT fk_category_products_category_id FOREIGN KEY (category_id) REFERENCES bitsbids.categories (id),
-    CONSTRAINT fk_category_products_product_id FOREIGN KEY (product_id) REFERENCES bitsbids.products (id)
+    CONSTRAINT fk_category_products_product_id FOREIGN KEY (product_id) REFERENCES bitsbids.products (id) ON DELETE CASCADE
 );
 
 CREATE TABLE bitsbids.bids
@@ -66,8 +66,8 @@ CREATE TABLE bitsbids.bids
     bidder_id  INTEGER                                          NOT NULL,
     price      INTEGER                                          NOT NULL,
     placed_at  TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_bids_product_id FOREIGN KEY (product_id) REFERENCES bitsbids.products (id),
-    CONSTRAINT fk_bids_bidder_id FOREIGN KEY (bidder_id) REFERENCES bitsbids.users (id)
+    CONSTRAINT fk_bids_product_id FOREIGN KEY (product_id) REFERENCES bitsbids.products (id) ON DELETE CASCADE,
+    CONSTRAINT fk_bids_bidder_id FOREIGN KEY (bidder_id) REFERENCES bitsbids.users (id) ON DELETE CASCADE
 );
 
 CREATE TABLE bitsbids.messages
@@ -90,8 +90,8 @@ CREATE TABLE bitsbids.conversations
     buyer_id               INTEGER                                          NOT NULL,
     last_read_by_seller_id INTEGER                                          NOT NULL,
     last_read_by_buyer_id  INTEGER                                          NOT NULL,
-    CONSTRAINT fk_conversations_product_id FOREIGN KEY (product_id) REFERENCES bitsbids.products (id),
-    CONSTRAINT fk_conversations_buyer_id FOREIGN KEY (buyer_id) REFERENCES bitsbids.users (id),
+    CONSTRAINT fk_conversations_product_id FOREIGN KEY (product_id) REFERENCES bitsbids.products (id) ON DELETE CASCADE,
+    CONSTRAINT fk_conversations_buyer_id FOREIGN KEY (buyer_id) REFERENCES bitsbids.users (id) ON DELETE CASCADE,
     CONSTRAINT fk_conversations_last_read_by_seller_id FOREIGN KEY (last_read_by_seller_id) REFERENCES bitsbids.messages (id),
     CONSTRAINT fk_conversations_last_read_by_buyer_id FOREIGN KEY (last_read_by_buyer_id) REFERENCES bitsbids.messages (id)
 );
@@ -114,3 +114,4 @@ CREATE INDEX idx_bids_product_id ON bitsbids.bids (product_id);
 CREATE INDEX idx_bids_bidder_id ON bitsbids.bids (bidder_id);
 
 CREATE INDEX idx_products_seller_id ON bitsbids.products (seller_id);
+CREATE INDEX idx_user_email ON bitsbids.users (email);
