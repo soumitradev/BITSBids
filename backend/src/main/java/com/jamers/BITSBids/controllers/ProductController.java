@@ -119,7 +119,7 @@ public class ProductController {
 						principal.getAttribute("email")).toString().isBlank()) {
 			return new ResponseEntity<GenericResponseType>(
 							new GenericResponseType(
-											UserCreateError.nullEmailError(),
+											AuthUserError.nullUserError(),
 											GenericResponseType.ResponseStatus.ERROR
 							),
 							HttpStatus.BAD_REQUEST
@@ -202,7 +202,7 @@ public class ProductController {
 						principal.getAttribute("email")).toString().isBlank()) {
 			return new ResponseEntity<GenericResponseType>(
 							new GenericResponseType(
-											UserCreateError.nullEmailError(),
+											AuthUserError.nullUserError(),
 											GenericResponseType.ResponseStatus.ERROR
 							),
 							HttpStatus.BAD_REQUEST
@@ -229,6 +229,58 @@ public class ProductController {
 							currentProduct,
 							GenericResponseType.ResponseStatus.SUCCESS
 			), HttpStatus.ACCEPTED);
+		}
+	}
+
+	@PostMapping("/api/product/{id}/delete")
+	public ResponseEntity<GenericResponseType> deleteProduct(
+					@AuthenticationPrincipal
+					OAuth2User principal,
+					@PathVariable
+					int id) {
+
+		if (principal.getAttribute("email") == null || Objects.requireNonNull(principal.getAttribute("email")).toString().isEmpty() || Objects.requireNonNull(
+						principal.getAttribute("email")).toString().isBlank()) {
+			return new ResponseEntity<GenericResponseType>(
+							new GenericResponseType(
+											AuthUserError.nullUserError(),
+											GenericResponseType.ResponseStatus.ERROR
+							),
+							HttpStatus.BAD_REQUEST
+			);
+		}
+
+		final User currentUser = userRepository.findByEmail(Objects.requireNonNull(principal.getAttribute("email")).toString()).blockFirst();
+
+		if (currentUser == null) {
+			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+							AuthUserError.nullUserError(),
+							GenericResponseType.ResponseStatus.ERROR
+			), HttpStatus.BAD_REQUEST);
+		}
+
+		final Product currentProduct = productRepository.findById(String.valueOf(id)).block();
+
+		if (currentProduct == null) {
+			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+							ProductFetchError.invalidProductError(),
+							GenericResponseType.ResponseStatus.ERROR
+			), HttpStatus.BAD_REQUEST);
+		}
+
+		if (currentUser.id() == currentProduct.sellerId()) {
+			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+							productRepository.deleteById(String.valueOf(id)).block(),
+							GenericResponseType.ResponseStatus.SUCCESS
+			), HttpStatus.ACCEPTED);
+		} else {
+			return new ResponseEntity<GenericResponseType>(
+							new GenericResponseType(
+											ProductDeleteError.notProductSellerError(),
+											GenericResponseType.ResponseStatus.ERROR
+							),
+							HttpStatus.UNAUTHORIZED
+			);
 		}
 	}
 }
