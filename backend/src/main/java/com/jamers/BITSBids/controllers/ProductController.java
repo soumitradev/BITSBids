@@ -17,10 +17,7 @@ import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Objects;
 
@@ -193,5 +190,45 @@ public class ProductController {
 						GenericResponseType.ResponseStatus.SUCCESS
 		), HttpStatus.ACCEPTED);
 
+	}
+
+	@GetMapping("/api/product/{id}")
+	public ResponseEntity<GenericResponseType> getProduct(
+					@AuthenticationPrincipal
+					OAuth2User principal,
+					@PathVariable
+					int id) {
+		if (principal.getAttribute("email") == null || Objects.requireNonNull(principal.getAttribute("email")).toString().isEmpty() || Objects.requireNonNull(
+						principal.getAttribute("email")).toString().isBlank()) {
+			return new ResponseEntity<GenericResponseType>(
+							new GenericResponseType(
+											UserCreateError.nullEmailError(),
+											GenericResponseType.ResponseStatus.ERROR
+							),
+							HttpStatus.BAD_REQUEST
+			);
+		}
+		final User currentUser = userRepository.findByEmail(Objects.requireNonNull(principal.getAttribute("email")).toString()).blockFirst();
+
+		if (currentUser == null) {
+			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+							AuthUserError.nullUserError(),
+							GenericResponseType.ResponseStatus.ERROR
+			), HttpStatus.BAD_REQUEST);
+		}
+
+		final Product currentProduct = productRepository.findById(String.valueOf(id)).block();
+
+		if (currentProduct == null) {
+			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+							ProductFetchError.invalidProductError(),
+							GenericResponseType.ResponseStatus.ERROR
+			), HttpStatus.BAD_REQUEST);
+		} else {
+			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+							currentProduct,
+							GenericResponseType.ResponseStatus.SUCCESS
+			), HttpStatus.ACCEPTED);
+		}
 	}
 }
