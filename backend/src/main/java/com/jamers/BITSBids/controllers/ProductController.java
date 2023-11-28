@@ -9,10 +9,7 @@ import com.jamers.BITSBids.repositories.UserRepository;
 import com.jamers.BITSBids.request_models.BidCreateData;
 import com.jamers.BITSBids.request_models.ProductCreateData;
 import com.jamers.BITSBids.response_types.GenericResponseType;
-import com.jamers.BITSBids.response_types.errors.AuthUserError;
-import com.jamers.BITSBids.response_types.errors.BidCreateError;
-import com.jamers.BITSBids.response_types.errors.ProductCreateError;
-import com.jamers.BITSBids.response_types.errors.ProductFetchError;
+import com.jamers.BITSBids.response_types.errors.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -67,6 +64,17 @@ public class ProductController {
 			);
 		}
 
+		if (principal.getAttribute("email") == null || Objects.requireNonNull(principal.getAttribute("email")).toString().isEmpty() || Objects.requireNonNull(
+						principal.getAttribute("email")).toString().isBlank()) {
+			return new ResponseEntity<GenericResponseType>(
+							new GenericResponseType(
+											UserCreateError.nullEmailError(),
+											GenericResponseType.ResponseStatus.ERROR
+							),
+							HttpStatus.BAD_REQUEST
+			);
+		}
+
 		final User currentUser = userRepository.findByEmail(Objects.requireNonNull(principal.getAttribute("email")).toString()).blockFirst();
 
 		if (currentUser == null) {
@@ -109,11 +117,16 @@ public class ProductController {
 					@Validated
 					@RequestBody
 					BidCreateData bidCreateData) {
-		if (principal.getAttribute("email") == null) {
-			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
-							AuthUserError.nullUserError(),
-							GenericResponseType.ResponseStatus.ERROR
-			), HttpStatus.BAD_REQUEST);
+
+		if (principal.getAttribute("email") == null || Objects.requireNonNull(principal.getAttribute("email")).toString().isEmpty() || Objects.requireNonNull(
+						principal.getAttribute("email")).toString().isBlank()) {
+			return new ResponseEntity<GenericResponseType>(
+							new GenericResponseType(
+											UserCreateError.nullEmailError(),
+											GenericResponseType.ResponseStatus.ERROR
+							),
+							HttpStatus.BAD_REQUEST
+			);
 		}
 
 		final User currentUser = userRepository.findByEmail(Objects.requireNonNull(principal.getAttribute("email")).toString()).blockFirst();
@@ -152,7 +165,7 @@ public class ProductController {
 		);
 
 
-		if (bidCreateData.price() < (1 + MIN_BID_DELTA / 100.0)*currentProduct.price()) {
+		if (bidCreateData.price() < (1 + MIN_BID_DELTA / 100.0) * currentProduct.price()) {
 			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
 							BidCreateError.invalidBidError(),
 							GenericResponseType.ResponseStatus.ERROR
