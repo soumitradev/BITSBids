@@ -9,6 +9,7 @@ import com.jamers.BITSBids.response_types.GenericResponseType;
 import com.jamers.BITSBids.response_types.errors.AuthUserError;
 import com.jamers.BITSBids.response_types.errors.ProductCreateError;
 import com.jamers.BITSBids.response_types.errors.ProductFetchError;
+import com.jamers.BITSBids.response_types.errors.UserCreateError;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -54,11 +55,15 @@ public class ProductController {
 			);
 		}
 
-		if (principal.getAttribute("email") == null) {
-			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
-							AuthUserError.nullUserError(),
-							GenericResponseType.ResponseStatus.ERROR
-			), HttpStatus.BAD_REQUEST);
+		if (principal.getAttribute("email") == null || Objects.requireNonNull(principal.getAttribute("email")).toString().isEmpty() || Objects.requireNonNull(
+						principal.getAttribute("email")).toString().isBlank()) {
+			return new ResponseEntity<GenericResponseType>(
+							new GenericResponseType(
+											UserCreateError.nullEmailError(),
+											GenericResponseType.ResponseStatus.ERROR
+							),
+							HttpStatus.BAD_REQUEST
+			);
 		}
 
 		final User currentUser = userRepository.findByEmail(Objects.requireNonNull(principal.getAttribute("email")).toString()).blockFirst();
@@ -96,6 +101,17 @@ public class ProductController {
 					OAuth2User principal,
 					@PathVariable
 					int id) {
+
+		if (principal.getAttribute("email") == null || Objects.requireNonNull(principal.getAttribute("email")).toString().isEmpty() || Objects.requireNonNull(
+						principal.getAttribute("email")).toString().isBlank()) {
+			return new ResponseEntity<GenericResponseType>(
+							new GenericResponseType(
+											UserCreateError.nullEmailError(),
+											GenericResponseType.ResponseStatus.ERROR
+							),
+							HttpStatus.BAD_REQUEST
+			);
+		}
 		final User currentUser = userRepository.findByEmail(Objects.requireNonNull(principal.getAttribute("email")).toString()).blockFirst();
 
 		if (currentUser == null) {
