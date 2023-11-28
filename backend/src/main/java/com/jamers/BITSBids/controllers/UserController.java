@@ -262,7 +262,7 @@ public class UserController {
 	}
 
 	@GetMapping("/api/user/products")
-	public ResponseEntity<GenericResponseType> getMe(
+	public ResponseEntity<GenericResponseType> getUserProducts(
 					@AuthenticationPrincipal
 					OAuth2User principal,
 					ProductRepository productRepository,
