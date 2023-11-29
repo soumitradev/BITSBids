@@ -209,7 +209,7 @@ public class ProductController {
 		return new ResponseEntity<GenericResponseType>(new GenericResponseType(
 						currentBid,
 						GenericResponseType.ResponseStatus.SUCCESS
-		), HttpStatus.ACCEPTED);
+		), HttpStatus.OK);
 
 	}
 
@@ -312,4 +312,30 @@ public class ProductController {
 			);
 		}
 	}
+
+	@GetMapping("/product/latest")
+	public ResponseEntity<GenericResponseType> getLatestProducts(
+					@AuthenticationPrincipal
+					OAuth2User principal) {
+		if (principal.getAttribute("email") == null || Objects.requireNonNull(principal.getAttribute("email")).toString().isEmpty() || Objects.requireNonNull(
+						principal.getAttribute("email")).toString().isBlank()) {
+			return new ResponseEntity<GenericResponseType>(
+							new GenericResponseType(
+											AuthUserError.nullEmailError(),
+											GenericResponseType.ResponseStatus.ERROR
+							),
+							HttpStatus.BAD_REQUEST
+			);
+
+		}
+		final List<Product> latestProducts = productRepository.findLatestProducts().collectList().block();
+		return new ResponseEntity<GenericResponseType>(
+						new GenericResponseType(
+										latestProducts,
+										GenericResponseType.ResponseStatus.SUCCESS
+						),
+						HttpStatus.OK
+		);
+	}
+
 }
