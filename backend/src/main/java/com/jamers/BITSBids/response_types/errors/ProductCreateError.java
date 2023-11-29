@@ -7,4 +7,11 @@ public class ProductCreateError extends GenericError {
 		error.cause = "ProductCreateData is null";
 		return error;
 	}
+
+	public static ProductCreateError invalidCategoryError() {
+		ProductCreateError error = new ProductCreateError();
+		error.error = "InvalidCategoryError";
+		error.cause = "Category is invalid";
+		return error;
+	}
 }

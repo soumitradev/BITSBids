@@ -6,7 +6,7 @@ import java.math.BigInteger;
 
 
 public record UserEditData(@NotBlank String room, @Digits(
-		integer = 10,
-		fraction = 0
+				integer = 10,
+				fraction = 0
 ) BigInteger phoneNumber) {
 }
