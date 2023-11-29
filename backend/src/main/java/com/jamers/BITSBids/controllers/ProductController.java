@@ -469,7 +469,6 @@ public class ProductController {
 						conversation.id(),
 						currentUser.id() == conversation.buyerId(),
 						messageCreateData.text(),
-						// TODO: think about chat media upload
 						messageCreateData.media(),
 						null
 		);
