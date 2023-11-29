@@ -480,6 +480,10 @@ public class ProductController {
 				otherSession.sendMessage(new TextMessage(String.valueOf(conversation.id())));
 			} catch (Exception e) {
 				e.printStackTrace();
+				return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+								MessageCreateError.internalServerError(),
+								GenericResponseType.ResponseStatus.ERROR
+				), HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		}
 
