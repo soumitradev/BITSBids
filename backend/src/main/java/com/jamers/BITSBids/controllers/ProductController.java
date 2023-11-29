@@ -4,6 +4,7 @@ import com.jamers.BITSBids.models.*;
 import com.jamers.BITSBids.repositories.*;
 import com.jamers.BITSBids.request_models.BidCreateData;
 import com.jamers.BITSBids.request_models.ProductCreateData;
+import com.jamers.BITSBids.response_models.CategorizedProduct;
 import com.jamers.BITSBids.response_types.GenericResponseType;
 import com.jamers.BITSBids.response_types.errors.*;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Objects;
 
 import static com.jamers.BITSBids.common.Constants.MIN_BID_DELTA;
@@ -255,8 +257,10 @@ public class ProductController {
 							GenericResponseType.ResponseStatus.ERROR
 			), HttpStatus.BAD_REQUEST);
 		} else {
+			List<Bid> bids = bidRepository.getLastTenBids(id).collectList().block();
+			List<String> categories = categoryRepository.listProductCategories(id).collectList().block();
 			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
-							currentProduct,
+							new CategorizedProduct(currentProduct, categories, bids),
 							GenericResponseType.ResponseStatus.SUCCESS
 			), HttpStatus.ACCEPTED);
 		}
