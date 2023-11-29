@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.Collections;
+import java.util.Objects;
 
 @Controller
 public class MediaController {
@@ -104,6 +105,21 @@ public class MediaController {
 								FileUploadError.fileUploadError(),
 								GenericResponseType.ResponseStatus.ERROR
 				), HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+
+			File dir = new File("tmpFiles");
+			if (dir.exists()) {
+				if (dir.listFiles() != null) {
+					for (File tempFile : Objects.requireNonNull(dir.listFiles())) {
+						boolean deleted = tempFile.delete();
+						if (!deleted) {
+							return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+											FileUploadError.fileUploadError(),
+											GenericResponseType.ResponseStatus.ERROR
+							), HttpStatus.INTERNAL_SERVER_ERROR);
+						}
+					}
+				}
 			}
 		}
 
