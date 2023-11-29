@@ -156,7 +156,7 @@ public class UserController {
 		return new ResponseEntity<GenericResponseType>(new GenericResponseType(
 						currentUser,
 						GenericResponseType.ResponseStatus.SUCCESS
-		), HttpStatus.ACCEPTED);
+		), HttpStatus.OK);
 	}
 
 	@PostMapping(
@@ -187,7 +187,7 @@ public class UserController {
 											userRepository.delete(currentUser).block(),
 											GenericResponseType.ResponseStatus.SUCCESS
 							),
-							HttpStatus.ACCEPTED
+							HttpStatus.OK
 			);
 		}
 	}
@@ -253,7 +253,7 @@ public class UserController {
 		return new ResponseEntity<GenericResponseType>(new GenericResponseType(
 						userRepository.save(user).block(),
 						GenericResponseType.ResponseStatus.SUCCESS
-		), HttpStatus.ACCEPTED);
+		), HttpStatus.OK);
 	}
 
 	@GetMapping("/user/products")
@@ -293,14 +293,14 @@ public class UserController {
 			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
 							products,
 							GenericResponseType.ResponseStatus.SUCCESS
-			), HttpStatus.ACCEPTED);
+			), HttpStatus.OK);
 
 		} else {
 			ArrayList<Product> products = productRepository.findSoldProductsById(userId).blockFirst();
 			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
 							products,
 							GenericResponseType.ResponseStatus.SUCCESS
-			), HttpStatus.ACCEPTED);
+			), HttpStatus.OK);
 		}
 
 
