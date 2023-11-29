@@ -30,8 +30,7 @@ public class MediaController {
 					@RequestParam("files")
 					MultipartFile[] files) {
 
-		MultiValueMap<String, String> responseMap
-						= new LinkedMultiValueMap<>();
+		MultiValueMap<String, String> responseMap = new LinkedMultiValueMap<>();
 		for (MultipartFile file : files) {
 			try {
 				InputStream fileStream = file.getInputStream();
@@ -40,17 +39,18 @@ public class MediaController {
 				if (!dir.exists()) {
 					boolean success = dir.mkdirs();
 					if (!success) {
-						return new ResponseEntity<GenericResponseType>(new GenericResponseType(
-										FileUploadError.fileUploadError(),
-										GenericResponseType.ResponseStatus.ERROR
-						), HttpStatus.INTERNAL_SERVER_ERROR);
+						return new ResponseEntity<GenericResponseType>(
+										new GenericResponseType(
+														FileUploadError.fileUploadError(),
+														GenericResponseType.ResponseStatus.ERROR
+										),
+										HttpStatus.INTERNAL_SERVER_ERROR
+						);
 					}
 				}
 				// Create the file on server
-				File serverFile = new File(dir.getAbsolutePath()
-								                           + File.separator + file.getOriginalFilename());
-				BufferedOutputStream stream = new BufferedOutputStream(
-								new FileOutputStream(serverFile));
+				File serverFile = new File(dir.getAbsolutePath() + File.separator + file.getOriginalFilename());
+				BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(serverFile));
 				fileStream.transferTo(stream);
 				stream.close();
 				fileStream.close();
@@ -60,51 +60,47 @@ public class MediaController {
 				headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 
 				HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
-				ResponseEntity<SeaweedFileAllocation> result =
-								restTemplate.exchange(
-												System.getenv("SEAWEED_MASTER") + "/dir/assign",
-												HttpMethod.GET,
-												entity,
-												SeaweedFileAllocation.class
-								);
+				ResponseEntity<SeaweedFileAllocation> result = restTemplate.exchange(
+								System.getenv("SEAWEED_MASTER") + "/dir/assign",
+								HttpMethod.GET,
+								entity,
+								SeaweedFileAllocation.class
+				);
 				SeaweedFileAllocation allocation = result.getBody();
 				if (allocation == null) {
-					return new ResponseEntity<GenericResponseType>(new GenericResponseType(
-									FileUploadError.fileUploadError(),
-									GenericResponseType.ResponseStatus.ERROR
-					), HttpStatus.INTERNAL_SERVER_ERROR);
+					return new ResponseEntity<GenericResponseType>(
+									new GenericResponseType(FileUploadError.fileUploadError(), GenericResponseType.ResponseStatus.ERROR),
+									HttpStatus.INTERNAL_SERVER_ERROR
+					);
 				}
 
 				HttpHeaders uploadHeaders = new HttpHeaders();
 				headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
-				MultiValueMap<String, Object> uploadBody
-								= new LinkedMultiValueMap<>();
+				MultiValueMap<String, Object> uploadBody = new LinkedMultiValueMap<>();
 				uploadBody.add("file", new FileSystemResource(serverFile));
 
-				HttpEntity<MultiValueMap<String, Object>> requestEntity
-								= new HttpEntity<>(uploadBody, uploadHeaders);
+				HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(uploadBody, uploadHeaders);
 
 
 				RestTemplate uploadRestTemplate = new RestTemplate();
-				SeaweedFile response = uploadRestTemplate
-								.postForEntity(
-												"http://" + allocation.url + "/" + allocation.fid,
-												requestEntity,
-												SeaweedFile.class
-								).getBody();
+				SeaweedFile response = uploadRestTemplate.postForEntity(
+								"http://" + allocation.url + "/" + allocation.fid,
+								requestEntity,
+								SeaweedFile.class
+				).getBody();
 				if (response == null) {
-					return new ResponseEntity<GenericResponseType>(new GenericResponseType(
-									FileUploadError.fileUploadError(),
-									GenericResponseType.ResponseStatus.ERROR
-					), HttpStatus.INTERNAL_SERVER_ERROR);
+					return new ResponseEntity<GenericResponseType>(
+									new GenericResponseType(FileUploadError.fileUploadError(), GenericResponseType.ResponseStatus.ERROR),
+									HttpStatus.INTERNAL_SERVER_ERROR
+					);
 				}
 				responseMap.add(response.name, System.getenv("PROD_URL") + "/f/" + allocation.fid);
 			} catch (Exception e) {
-				return new ResponseEntity<GenericResponseType>(new GenericResponseType(
-								FileUploadError.fileUploadError(),
-								GenericResponseType.ResponseStatus.ERROR
-				), HttpStatus.INTERNAL_SERVER_ERROR);
+				return new ResponseEntity<GenericResponseType>(
+								new GenericResponseType(FileUploadError.fileUploadError(), GenericResponseType.ResponseStatus.ERROR),
+								HttpStatus.INTERNAL_SERVER_ERROR
+				);
 			}
 
 			File dir = new File("tmpFiles");
@@ -113,10 +109,13 @@ public class MediaController {
 					for (File tempFile : Objects.requireNonNull(dir.listFiles())) {
 						boolean deleted = tempFile.delete();
 						if (!deleted) {
-							return new ResponseEntity<GenericResponseType>(new GenericResponseType(
-											FileUploadError.fileUploadError(),
-											GenericResponseType.ResponseStatus.ERROR
-							), HttpStatus.INTERNAL_SERVER_ERROR);
+							return new ResponseEntity<GenericResponseType>(
+											new GenericResponseType(
+															FileUploadError.fileUploadError(),
+															GenericResponseType.ResponseStatus.ERROR
+											),
+											HttpStatus.INTERNAL_SERVER_ERROR
+							);
 						}
 					}
 				}
