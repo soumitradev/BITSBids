@@ -289,6 +289,6 @@ public class UserController {
 		return new ResponseEntity<GenericResponseType>(new GenericResponseType(
 						conversationList,
 						GenericResponseType.ResponseStatus.SUCCESS
-		), HttpStatus.FOUND);
+		), HttpStatus.OK);
 	}
 }
