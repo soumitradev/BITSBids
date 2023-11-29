@@ -4,5 +4,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
 @Table("conversations")
-public record Conversation(@Id int id, int sellerId, int buyerId, int lastReadBySellerId, int lastReadByBuyerId) {
+public record Conversation(@Id Integer id, int sellerId, int buyerId, Integer lastReadBySellerId,
+                           Integer lastReadByBuyerId) {
 }
