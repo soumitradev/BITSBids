@@ -29,8 +29,7 @@ public class CategoryController {
 	final ProductRepository productRepository;
 
 
-	public CategoryController(DatabaseClient client, UserRepository userRepository, CategoryRepository categoryRepository,
-	                          ProductRepository productRepository) {
+	public CategoryController(DatabaseClient client, UserRepository userRepository, CategoryRepository categoryRepository, ProductRepository productRepository) {
 		this.client = client;
 		this.userRepository = userRepository;
 		this.categoryRepository = categoryRepository;
@@ -43,13 +42,10 @@ public class CategoryController {
 					OAuth2User principal) {
 		if (principal.getAttribute("email") == null || Objects.requireNonNull(principal.getAttribute("email")).toString().isEmpty() || Objects.requireNonNull(
 						principal.getAttribute("email")).toString().isBlank()) {
-			return new ResponseEntity<GenericResponseType>(
-							new GenericResponseType(
-											AuthUserError.nullUserError(),
-											GenericResponseType.ResponseStatus.ERROR
-							),
-							HttpStatus.BAD_REQUEST
-			);
+			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+							AuthUserError.nullUserError(),
+							GenericResponseType.ResponseStatus.ERROR
+			), HttpStatus.BAD_REQUEST);
 		}
 
 		final User currentUser = userRepository.findByEmail(Objects.requireNonNull(principal.getAttribute("email")).toString()).blockFirst();
@@ -65,8 +61,7 @@ public class CategoryController {
 		return new ResponseEntity<GenericResponseType>(new GenericResponseType(
 						categories,
 						GenericResponseType.ResponseStatus.SUCCESS
-		),
-						HttpStatus.FOUND);
+		), HttpStatus.FOUND);
 	}
 
 
@@ -78,13 +73,10 @@ public class CategoryController {
 					int id) {
 		if (principal.getAttribute("email") == null || Objects.requireNonNull(principal.getAttribute("email")).toString().isEmpty() || Objects.requireNonNull(
 						principal.getAttribute("email")).toString().isBlank()) {
-			return new ResponseEntity<GenericResponseType>(
-							new GenericResponseType(
-											AuthUserError.nullUserError(),
-											GenericResponseType.ResponseStatus.ERROR
-							),
-							HttpStatus.BAD_REQUEST
-			);
+			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+							AuthUserError.nullUserError(),
+							GenericResponseType.ResponseStatus.ERROR
+			), HttpStatus.BAD_REQUEST);
 		}
 
 		final User currentUser = userRepository.findByEmail(Objects.requireNonNull(principal.getAttribute("email")).toString()).blockFirst();
@@ -99,18 +91,20 @@ public class CategoryController {
 		final Category currentCategory = categoryRepository.findById(String.valueOf(id)).block();
 
 		if (currentCategory == null) {
-			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
-							CategoryFetchError.invalidCategoryError(),
-							GenericResponseType.ResponseStatus.ERROR
-			), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<GenericResponseType>(
+							new GenericResponseType(
+											CategoryFetchError.invalidCategoryError(),
+											GenericResponseType.ResponseStatus.ERROR
+							),
+							HttpStatus.BAD_REQUEST
+			);
 		}
 
 		final List<Product> products = categoryRepository.listProductByCategory(id).collectList().block();
 		return new ResponseEntity<GenericResponseType>(new GenericResponseType(
 						products,
 						GenericResponseType.ResponseStatus.SUCCESS
-		),
-						HttpStatus.FOUND);
+		), HttpStatus.FOUND);
 	}
 
 }

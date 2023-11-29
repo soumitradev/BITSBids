@@ -10,7 +10,7 @@ public class ProductCreateError extends GenericError {
 
 	public static ProductCreateError invalidCategoryError() {
 		ProductCreateError error = new ProductCreateError();
-		error.error = "invalidCategoryError";
+		error.error = "InvalidCategoryError";
 		error.cause = "Category is invalid";
 		return error;
 	}

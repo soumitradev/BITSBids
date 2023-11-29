@@ -31,8 +31,7 @@ public class ProductController {
 	final CategoryRepository categoryRepository;
 	final ProductCategoryRepository productCategoryRepository;
 
-	public ProductController(DatabaseClient client, ProductRepository productRepository, UserRepository userRepository,
-	                         BidRepository bidRepository, CategoryRepository categoryRepository, ProductCategoryRepository productCategoryRepository) {
+	public ProductController(DatabaseClient client, ProductRepository productRepository, UserRepository userRepository, BidRepository bidRepository, CategoryRepository categoryRepository, ProductCategoryRepository productCategoryRepository) {
 		this.client = client;
 		this.productRepository = productRepository;
 		this.userRepository = userRepository;
@@ -101,19 +100,18 @@ public class ProductController {
 		for (String categoryName : productCreateData.category()) {
 			Category category = categoryRepository.getCategoryByName(categoryName).blockFirst();
 			if (category == null) {
-				return new ResponseEntity<GenericResponseType>(new GenericResponseType(
-								ProductCreateError.invalidCategoryError(),
-								GenericResponseType.ResponseStatus.ERROR
-				), HttpStatus.BAD_REQUEST);
+				return new ResponseEntity<GenericResponseType>(
+								new GenericResponseType(
+												ProductCreateError.invalidCategoryError(),
+												GenericResponseType.ResponseStatus.ERROR
+								),
+								HttpStatus.BAD_REQUEST
+				);
 			}
 		}
 		for (String categoryName : productCreateData.category()) {
 			Category category = categoryRepository.getCategoryByName(categoryName).blockFirst();
-			ProductCategory productCategory = new ProductCategory(
-							null,
-							currentProduct.id(),
-							category.id()
-			);
+			ProductCategory productCategory = new ProductCategory(null, currentProduct.id(), category.id());
 			productCategoryRepository.save(productCategory).block();
 		}
 		return new ResponseEntity<GenericResponseType>(new GenericResponseType(
@@ -138,13 +136,10 @@ public class ProductController {
 
 		if (principal.getAttribute("email") == null || Objects.requireNonNull(principal.getAttribute("email")).toString().isEmpty() || Objects.requireNonNull(
 						principal.getAttribute("email")).toString().isBlank()) {
-			return new ResponseEntity<GenericResponseType>(
-							new GenericResponseType(
-											AuthUserError.nullUserError(),
-											GenericResponseType.ResponseStatus.ERROR
-							),
-							HttpStatus.BAD_REQUEST
-			);
+			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+							AuthUserError.nullUserError(),
+							GenericResponseType.ResponseStatus.ERROR
+			), HttpStatus.BAD_REQUEST);
 		}
 
 		final User currentUser = userRepository.findByEmail(Objects.requireNonNull(principal.getAttribute("email")).toString()).blockFirst();
@@ -158,29 +153,23 @@ public class ProductController {
 		final Product currentProduct = productRepository.findById(String.valueOf(id)).block();
 
 		if (currentProduct == null) {
-			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
-							ProductFetchError.invalidProductError(),
-							GenericResponseType.ResponseStatus.ERROR
-			), HttpStatus.BAD_REQUEST);
-		}
-
-		if (bidCreateData == null) {
 			return new ResponseEntity<GenericResponseType>(
 							new GenericResponseType(
-											BidCreateError.nullBidError(),
+											ProductFetchError.invalidProductError(),
 											GenericResponseType.ResponseStatus.ERROR
 							),
 							HttpStatus.BAD_REQUEST
 			);
 		}
 
-		Bid bid = new Bid(
-						null,
-						currentProduct.id(),
-						currentUser.id(),
-						bidCreateData.price(),
-						null
-		);
+		if (bidCreateData == null) {
+			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+							BidCreateError.nullBidError(),
+							GenericResponseType.ResponseStatus.ERROR
+			), HttpStatus.BAD_REQUEST);
+		}
+
+		Bid bid = new Bid(null, currentProduct.id(), currentUser.id(), bidCreateData.price(), null);
 
 
 		if (bidCreateData.price() < (1 + MIN_BID_DELTA / 100.0) * currentProduct.price()) {
@@ -232,13 +221,10 @@ public class ProductController {
 					int id) {
 		if (principal.getAttribute("email") == null || Objects.requireNonNull(principal.getAttribute("email")).toString().isEmpty() || Objects.requireNonNull(
 						principal.getAttribute("email")).toString().isBlank()) {
-			return new ResponseEntity<GenericResponseType>(
-							new GenericResponseType(
-											AuthUserError.nullUserError(),
-											GenericResponseType.ResponseStatus.ERROR
-							),
-							HttpStatus.BAD_REQUEST
-			);
+			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+							AuthUserError.nullUserError(),
+							GenericResponseType.ResponseStatus.ERROR
+			), HttpStatus.BAD_REQUEST);
 		}
 		final User currentUser = userRepository.findByEmail(Objects.requireNonNull(principal.getAttribute("email")).toString()).blockFirst();
 
@@ -252,17 +238,23 @@ public class ProductController {
 		final Product currentProduct = productRepository.findById(String.valueOf(id)).block();
 
 		if (currentProduct == null) {
-			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
-							ProductFetchError.invalidProductError(),
-							GenericResponseType.ResponseStatus.ERROR
-			), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<GenericResponseType>(
+							new GenericResponseType(
+											ProductFetchError.invalidProductError(),
+											GenericResponseType.ResponseStatus.ERROR
+							),
+							HttpStatus.BAD_REQUEST
+			);
 		} else {
 			List<Bid> bids = bidRepository.getLastTenBids(id).collectList().block();
 			List<String> categories = categoryRepository.listProductCategories(id).collectList().block();
-			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
-							new CategorizedProduct(currentProduct, categories, bids),
-							GenericResponseType.ResponseStatus.SUCCESS
-			), HttpStatus.ACCEPTED);
+			return new ResponseEntity<GenericResponseType>(
+							new GenericResponseType(
+											new CategorizedProduct(currentProduct, categories, bids),
+											GenericResponseType.ResponseStatus.SUCCESS
+							),
+							HttpStatus.ACCEPTED
+			);
 		}
 	}
 
@@ -275,13 +267,10 @@ public class ProductController {
 
 		if (principal.getAttribute("email") == null || Objects.requireNonNull(principal.getAttribute("email")).toString().isEmpty() || Objects.requireNonNull(
 						principal.getAttribute("email")).toString().isBlank()) {
-			return new ResponseEntity<GenericResponseType>(
-							new GenericResponseType(
-											AuthUserError.nullUserError(),
-											GenericResponseType.ResponseStatus.ERROR
-							),
-							HttpStatus.BAD_REQUEST
-			);
+			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+							AuthUserError.nullUserError(),
+							GenericResponseType.ResponseStatus.ERROR
+			), HttpStatus.BAD_REQUEST);
 		}
 
 		final User currentUser = userRepository.findByEmail(Objects.requireNonNull(principal.getAttribute("email")).toString()).blockFirst();
@@ -296,17 +285,23 @@ public class ProductController {
 		final Product currentProduct = productRepository.findById(String.valueOf(id)).block();
 
 		if (currentProduct == null) {
-			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
-							ProductFetchError.invalidProductError(),
-							GenericResponseType.ResponseStatus.ERROR
-			), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<GenericResponseType>(
+							new GenericResponseType(
+											ProductFetchError.invalidProductError(),
+											GenericResponseType.ResponseStatus.ERROR
+							),
+							HttpStatus.BAD_REQUEST
+			);
 		}
 
 		if (currentUser.id() == currentProduct.sellerId()) {
-			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
-							productRepository.deleteById(String.valueOf(id)).block(),
-							GenericResponseType.ResponseStatus.SUCCESS
-			), HttpStatus.ACCEPTED);
+			return new ResponseEntity<GenericResponseType>(
+							new GenericResponseType(
+											productRepository.deleteById(String.valueOf(id)).block(),
+											GenericResponseType.ResponseStatus.SUCCESS
+							),
+							HttpStatus.ACCEPTED
+			);
 		} else {
 			return new ResponseEntity<GenericResponseType>(
 							new GenericResponseType(

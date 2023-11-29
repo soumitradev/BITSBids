@@ -5,7 +5,5 @@ import com.jamers.BITSBids.models.Product;
 
 import java.util.List;
 
-public record CategorizedProduct(Product product, List<String>
-				Categories, List<Bid> Bids
-) {
+public record CategorizedProduct(Product product, List<String> Categories, List<Bid> Bids) {
 }
