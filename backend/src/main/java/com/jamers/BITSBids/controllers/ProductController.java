@@ -170,6 +170,17 @@ public class ProductController {
 		}
 
 		Bid currentBid = bidRepository.save(bid).block();
+
+		if (currentBid == null) {
+			return new ResponseEntity<GenericResponseType>(
+							new GenericResponseType(
+											BidCreateError.internalServerError(),
+											GenericResponseType.ResponseStatus.ERROR
+							),
+							HttpStatus.INTERNAL_SERVER_ERROR
+			);
+		}
+
 		Product newProduct = new Product(
 						currentProduct.id(),
 						currentProduct.name(),

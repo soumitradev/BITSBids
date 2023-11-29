@@ -14,5 +14,12 @@ public class BidCreateError extends GenericError {
 		error.cause = "BidCreateData is null";
 		return error;
 	}
+
+	public static BidCreateError internalServerError() {
+		BidCreateError error = new BidCreateError();
+		error.error = "InternalServerError";
+		error.cause = "Internal server error while making bid";
+		return error;
+	}
 }
 
