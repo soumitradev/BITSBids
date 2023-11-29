@@ -1,11 +1,7 @@
 package com.jamers.BITSBids.controllers;
 
-import com.jamers.BITSBids.models.Bid;
-import com.jamers.BITSBids.models.Product;
-import com.jamers.BITSBids.models.User;
-import com.jamers.BITSBids.repositories.BidRepository;
-import com.jamers.BITSBids.repositories.ProductRepository;
-import com.jamers.BITSBids.repositories.UserRepository;
+import com.jamers.BITSBids.models.*;
+import com.jamers.BITSBids.repositories.*;
 import com.jamers.BITSBids.request_models.BidCreateData;
 import com.jamers.BITSBids.request_models.ProductCreateData;
 import com.jamers.BITSBids.response_types.GenericResponseType;
@@ -30,13 +26,17 @@ public class ProductController {
 	final ProductRepository productRepository;
 	final UserRepository userRepository;
 	final BidRepository bidRepository;
+	final CategoryRepository categoryRepository;
+	final ProductCategoryRepository productCategoryRepository;
 
 	public ProductController(DatabaseClient client, ProductRepository productRepository, UserRepository userRepository,
-	                         BidRepository bidRepository) {
+	                         BidRepository bidRepository, CategoryRepository categoryRepository, ProductCategoryRepository productCategoryRepository) {
 		this.client = client;
 		this.productRepository = productRepository;
 		this.userRepository = userRepository;
 		this.bidRepository = bidRepository;
+		this.categoryRepository = categoryRepository;
+		this.productCategoryRepository = productCategoryRepository;
 
 	}
 
@@ -65,7 +65,7 @@ public class ProductController {
 						principal.getAttribute("email")).toString().isBlank()) {
 			return new ResponseEntity<GenericResponseType>(
 							new GenericResponseType(
-											UserCreateError.nullEmailError(),
+											AuthUserError.nullEmailError(),
 											GenericResponseType.ResponseStatus.ERROR
 							),
 							HttpStatus.BAD_REQUEST
@@ -95,8 +95,27 @@ public class ProductController {
 						productCreateData.closedAt(),
 						null
 		);
+		Product currentProduct = productRepository.save(product).block();
+		for (String categoryName : productCreateData.category()) {
+			Category category = categoryRepository.getCategoryByName(categoryName).blockFirst();
+			if (category == null) {
+				return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+								ProductCreateError.invalidCategoryError(),
+								GenericResponseType.ResponseStatus.ERROR
+				), HttpStatus.BAD_REQUEST);
+			}
+		}
+		for (String categoryName : productCreateData.category()) {
+			Category category = categoryRepository.getCategoryByName(categoryName).blockFirst();
+			ProductCategory productCategory = new ProductCategory(
+							null,
+							currentProduct.id(),
+							category.id()
+			);
+			productCategoryRepository.save(productCategory).block();
+		}
 		return new ResponseEntity<GenericResponseType>(new GenericResponseType(
-						productRepository.save(product).block(),
+						currentProduct,
 						GenericResponseType.ResponseStatus.SUCCESS
 		), HttpStatus.CREATED);
 	}

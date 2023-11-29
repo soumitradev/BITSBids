@@ -15,4 +15,6 @@ public interface CategoryRepository extends ReactiveCrudRepository<Category, Str
 	@Query("SELECT DISTINCT * FROM bitsbids.products p Join bitsbids.category_products pc ON pc.product_id = p.id where pc.category_id = :id ")
 	Flux<Product> listProductByCategory(int id);
 
+	@Query("SELECT * FROM bitsbids.categories where name = :name")
+	Flux<Category> getCategoryByName(String name);
 }
