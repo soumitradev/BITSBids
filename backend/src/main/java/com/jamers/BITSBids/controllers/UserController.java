@@ -38,7 +38,7 @@ public class UserController {
 	}
 
 	@PostMapping(
-					path = "/api/user/create",
+					path = "/user/create",
 					consumes = MediaType.APPLICATION_JSON_VALUE,
 					produces = MediaType.APPLICATION_JSON_VALUE
 	)
@@ -131,7 +131,7 @@ public class UserController {
 		}
 	}
 
-	@GetMapping("/api/user/me")
+	@GetMapping("/user/me")
 	public ResponseEntity<GenericResponseType> getMe(
 					@AuthenticationPrincipal
 					OAuth2User principal) {
@@ -160,7 +160,7 @@ public class UserController {
 	}
 
 	@PostMapping(
-					path = "/api/user/delete"
+					path = "/user/delete"
 	)
 	public ResponseEntity<GenericResponseType> delete(
 					@AuthenticationPrincipal
@@ -193,7 +193,7 @@ public class UserController {
 	}
 
 	@PostMapping(
-					path = "/api/user/edit",
+					path = "/user/edit",
 					consumes = MediaType.APPLICATION_JSON_VALUE,
 					produces = MediaType.APPLICATION_JSON_VALUE
 	)

@@ -41,7 +41,7 @@ public class ProductController {
 	}
 
 	@PostMapping(
-					path = "/api/product/create",
+					path = "/product/create",
 					consumes = MediaType.APPLICATION_JSON_VALUE,
 					produces = MediaType.APPLICATION_JSON_VALUE
 	)
@@ -102,7 +102,7 @@ public class ProductController {
 	}
 
 	@PostMapping(
-					path = "/api/product/{id}/bid",
+					path = "/product/{id}/bid",
 					consumes = MediaType.APPLICATION_JSON_VALUE,
 					produces = MediaType.APPLICATION_JSON_VALUE
 	)
@@ -192,7 +192,7 @@ public class ProductController {
 
 	}
 
-	@GetMapping("/api/product/{id}")
+	@GetMapping("/product/{id}")
 	public ResponseEntity<GenericResponseType> getProduct(
 					@AuthenticationPrincipal
 					OAuth2User principal,
@@ -232,7 +232,7 @@ public class ProductController {
 		}
 	}
 
-	@PostMapping("/api/product/{id}/delete")
+	@PostMapping("/product/{id}/delete")
 	public ResponseEntity<GenericResponseType> deleteProduct(
 					@AuthenticationPrincipal
 					OAuth2User principal,

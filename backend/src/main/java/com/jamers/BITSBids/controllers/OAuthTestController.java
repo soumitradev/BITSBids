@@ -10,7 +10,7 @@ import java.util.Map;
 
 @RestController
 public class OAuthTestController {
-	@GetMapping("/api/auth/test")
+	@GetMapping("/auth/test")
 	public Map<String, String> test(
 					@AuthenticationPrincipal
 					OAuth2User principal) {
