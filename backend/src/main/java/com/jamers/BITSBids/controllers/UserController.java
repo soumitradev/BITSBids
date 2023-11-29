@@ -95,7 +95,7 @@ public class UserController {
 		);
 		Matcher matcher = pattern.matcher(Objects.requireNonNull(principal.getAttribute("email")));
 		if (matcher.find()) {
-			int batch = 0;
+			int batch;
 			try {
 				batch = Integer.parseInt(matcher.group(1));
 			} catch (NumberFormatException e) {
