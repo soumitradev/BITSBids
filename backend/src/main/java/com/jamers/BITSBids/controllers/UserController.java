@@ -297,9 +297,6 @@ public class UserController {
 						products,
 						GenericResponseType.ResponseStatus.SUCCESS
 		), HttpStatus.OK);
-
-
 	}
-
 }
 
