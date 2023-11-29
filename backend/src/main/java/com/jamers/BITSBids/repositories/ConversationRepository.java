@@ -8,6 +8,6 @@ import reactor.core.publisher.Flux;
 
 public interface ConversationRepository extends ReactiveCrudRepository<Conversation, String>,
 				ReactiveQueryByExampleExecutor<Conversation> {
-	@Query("select * from bitsbids.conversations c where :id in (c.buyer_id,c.seller_id)")
+	@Query("SELECT * FROM bitsbids.conversations c WHERE :id IN (c.buyer_id,c.seller_id)")
 	Flux<Conversation> findUserConversations(int id);
 }
