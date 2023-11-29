@@ -279,29 +279,24 @@ public class UserController {
 
 
 		final User currentUser = userRepository.findByEmail(Objects.requireNonNull(principal.getAttribute("email")).toString()).blockFirst();
-		int userId = currentUser.id();
-
 		if (currentUser == null) {
 			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
 							AuthUserError.nullUserError(),
 							GenericResponseType.ResponseStatus.ERROR
 			), HttpStatus.BAD_REQUEST);
 		}
+		int userId = currentUser.id();
 
+		ArrayList<Product> products;
 		if (active) {
-			ArrayList<Product> products = productRepository.findActiveProductsById(userId).blockFirst();
-			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
-							products,
-							GenericResponseType.ResponseStatus.SUCCESS
-			), HttpStatus.OK);
-
+			products = productRepository.findActiveProductsById(userId).blockFirst();
 		} else {
-			ArrayList<Product> products = productRepository.findSoldProductsById(userId).blockFirst();
-			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
-							products,
-							GenericResponseType.ResponseStatus.SUCCESS
-			), HttpStatus.OK);
+			products = productRepository.findSoldProductsById(userId).blockFirst();
 		}
+		return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+						products,
+						GenericResponseType.ResponseStatus.SUCCESS
+		), HttpStatus.OK);
 
 
 	}
