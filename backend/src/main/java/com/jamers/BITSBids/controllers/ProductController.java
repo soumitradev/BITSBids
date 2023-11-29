@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -36,9 +37,9 @@ public class ProductController {
 	final ProductCategoryRepository productCategoryRepository;
 	final ConversationRepository conversationRepository;
 	final MessageRepository messageRepository;
-	final Map<String, WebSocketSession> sessions;
+	final Map<String, HashSet<WebSocketSession>> sessions;
 
-	public ProductController(DatabaseClient client, ProductRepository productRepository, UserRepository userRepository, BidRepository bidRepository, CategoryRepository categoryRepository, ProductCategoryRepository productCategoryRepository, ConversationRepository conversationRepository, MessageRepository messageRepository, Map<String, WebSocketSession> sessions) {
+	public ProductController(DatabaseClient client, ProductRepository productRepository, UserRepository userRepository, BidRepository bidRepository, CategoryRepository categoryRepository, ProductCategoryRepository productCategoryRepository, ConversationRepository conversationRepository, MessageRepository messageRepository, Map<String, HashSet<WebSocketSession>> sessions) {
 		this.client = client;
 		this.productRepository = productRepository;
 		this.userRepository = userRepository;
@@ -474,10 +475,12 @@ public class ProductController {
 		);
 
 		User otherUser = userRepository.findById(String.valueOf(currentUser.id() == conversation.buyerId() ? conversation.sellerId() : conversation.buyerId())).block();
-		WebSocketSession otherSession = sessions.get(otherUser.email());
-		if (otherSession != null) {
+		HashSet<WebSocketSession> otherSessions = sessions.get(otherUser.email());
+		if (otherSessions != null) {
 			try {
-				otherSession.sendMessage(new TextMessage(String.valueOf(conversation.id())));
+				for (WebSocketSession otherSession : otherSessions) {
+					otherSession.sendMessage(new TextMessage(String.valueOf(conversation.id())));
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 				return new ResponseEntity<GenericResponseType>(new GenericResponseType(

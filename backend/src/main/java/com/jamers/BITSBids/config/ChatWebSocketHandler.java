@@ -10,6 +10,7 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import java.util.HashSet;
 import java.util.Map;
 
 import static org.springframework.web.socket.CloseStatus.SERVER_ERROR;
@@ -18,7 +19,7 @@ import static org.springframework.web.socket.CloseStatus.SERVER_ERROR;
 class ChatWebSocketHandler extends TextWebSocketHandler {
 
 	private static final Logger logger = LoggerFactory.getLogger(ChatWebSocketHandler.class);
-	private final Map<String, WebSocketSession> sessions;
+	private final Map<String, HashSet<WebSocketSession>> sessions;
 
 	@Override
 	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
@@ -28,9 +29,14 @@ class ChatWebSocketHandler extends TextWebSocketHandler {
 			return;
 		}
 
-		// TODO: think about multiple sessions per user
 		String email = principal.getPrincipal().getAttribute("email");
-		sessions.put(email, session);
+		if (sessions.containsKey(email)) {
+			sessions.get(email).add(session);
+		} else {
+			HashSet<WebSocketSession> newSet = new HashSet<>();
+			newSet.add(session);
+			sessions.put(email, newSet);
+		}
 		logger.info("Server connection {} from principal {} opened", session.getId(), principal.getPrincipal().getAttribute("email"));
 
 		TextMessage message = new TextMessage(String.format("Connected to server from principal %s with id %s", principal.getName(), session.getId()));
@@ -53,7 +59,9 @@ class ChatWebSocketHandler extends TextWebSocketHandler {
 		}
 		String email = principal.getPrincipal().getAttribute("email");
 		logger.info("Server connection {} from principal {} closed with status {}", session.getId(), principal.getName(), status);
-		sessions.remove(email);
+		if (sessions.containsKey(email)) {
+			sessions.get(email).remove(session);
+		}
 	}
 
 	@Override

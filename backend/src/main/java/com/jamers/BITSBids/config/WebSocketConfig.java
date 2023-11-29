@@ -8,15 +8,16 @@ import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 @Configuration
 @EnableWebSocket
 public class WebSocketConfig implements WebSocketConfigurer {
-	private final Map<String, WebSocketSession> sessions = new HashMap<>();
+	private final Map<String, HashSet<WebSocketSession>> sessions = new HashMap<>();
 
 	@Bean("sessions")
-	public Map<String, WebSocketSession> getSessions() {
+	public Map<String, HashSet<WebSocketSession>> getSessions() {
 		return sessions;
 	}
 
