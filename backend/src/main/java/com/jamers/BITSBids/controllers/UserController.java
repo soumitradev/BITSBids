@@ -1,15 +1,19 @@
 package com.jamers.BITSBids.controllers;
 
+import com.jamers.BITSBids.models.Bid;
 import com.jamers.BITSBids.models.Conversation;
 import com.jamers.BITSBids.models.Product;
 import com.jamers.BITSBids.models.User;
+import com.jamers.BITSBids.repositories.BidRepository;
 import com.jamers.BITSBids.repositories.ConversationRepository;
 import com.jamers.BITSBids.repositories.ProductRepository;
 import com.jamers.BITSBids.repositories.UserRepository;
 import com.jamers.BITSBids.request_models.UserCreateData;
 import com.jamers.BITSBids.request_models.UserEditData;
+import com.jamers.BITSBids.response_models.ProductBidPair;
 import com.jamers.BITSBids.response_types.GenericResponseType;
 import com.jamers.BITSBids.response_types.errors.AuthUserError;
+import com.jamers.BITSBids.response_types.errors.BidFetchError;
 import com.jamers.BITSBids.response_types.errors.UserCreateError;
 import com.jamers.BITSBids.response_types.errors.UserEditError;
 import org.springframework.http.HttpStatus;
@@ -22,6 +26,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -35,12 +40,14 @@ public class UserController {
 	final UserRepository userRepository;
 	final ConversationRepository conversationRepository;
 	final ProductRepository productRepository;
+	final BidRepository bidRepository;
 
-	public UserController(DatabaseClient client, UserRepository userRepository, ConversationRepository conversationRepository, ProductRepository productRepository) {
+	public UserController(DatabaseClient client, UserRepository userRepository, ConversationRepository conversationRepository, ProductRepository productRepository, BidRepository bidRepository) {
 		this.client = client;
 		this.userRepository = userRepository;
 		this.conversationRepository = conversationRepository;
 		this.productRepository = productRepository;
+		this.bidRepository = bidRepository;
 	}
 
 	@PostMapping(
@@ -300,6 +307,65 @@ public class UserController {
 		}
 		return new ResponseEntity<GenericResponseType>(new GenericResponseType(
 						products,
+						GenericResponseType.ResponseStatus.SUCCESS
+		), HttpStatus.OK);
+	}
+
+	@GetMapping("/user/bids")
+	public ResponseEntity<GenericResponseType> getUserBids(
+					@AuthenticationPrincipal
+					OAuth2User principal,
+					@RequestParam(
+									name = "active",
+									required = true
+					)
+					boolean active) {
+		if (principal.getAttribute("email") == null || Objects.requireNonNull(principal.getAttribute("email")).toString().isEmpty() || Objects.requireNonNull(
+						principal.getAttribute("email")).toString().isBlank()) {
+			return new ResponseEntity<GenericResponseType>(
+							new GenericResponseType(
+											AuthUserError.nullEmailError(),
+											GenericResponseType.ResponseStatus.ERROR
+							),
+							HttpStatus.UNAUTHORIZED
+			);
+		}
+
+
+		final User currentUser = userRepository.findByEmail(Objects.requireNonNull(principal.getAttribute("email")).toString()).blockFirst();
+		if (currentUser == null) {
+			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+							AuthUserError.nullUserError(),
+							GenericResponseType.ResponseStatus.ERROR
+			), HttpStatus.BAD_REQUEST);
+		}
+		int userId = currentUser.id();
+
+		List<ProductBidPair> productBidPairs;
+		List<Bid> bids;
+		List<Product> products;
+		if (active) {
+			bids = bidRepository.findActiveBidsByUserId(userId).collectList().block();
+			products = bidRepository.findActiveBidProductsByUserId(userId).collectList().block();
+		} else {
+			bids = bidRepository.findInactiveBidsByUserId(userId).collectList().block();
+			products = bidRepository.findInactiveBidProductsByUserId(userId).collectList().block();
+		}
+		if (bids == null && products == null) {
+			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+							new ArrayList<>(),
+							GenericResponseType.ResponseStatus.SUCCESS
+			), HttpStatus.OK);
+		}
+		if (products == null || bids == null) {
+			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+							BidFetchError.invalidBidError(),
+							GenericResponseType.ResponseStatus.ERROR
+			), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		productBidPairs = ProductBidPair.zip(products, bids);
+		return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+						productBidPairs,
 						GenericResponseType.ResponseStatus.SUCCESS
 		), HttpStatus.OK);
 	}
