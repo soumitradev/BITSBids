@@ -90,7 +90,7 @@ CREATE INDEX idx_products_price_created_at_closed_at ON bitsbids.products USING 
 CREATE INDEX idx_messages_sent_at ON bitsbids.messages USING BTREE (sent_at);
 CREATE INDEX idx_bids_placed_at ON bitsbids.bids USING BTREE (placed_at);
 
-CREATE INDEX idx_conversations_product_id ON bitsbids.conversations (product_id);
+CREATE INDEX idx_conversations_seller_id ON bitsbids.conversations (seller_id);
 CREATE INDEX idx_conversations_buyer_id ON bitsbids.conversations (buyer_id);
 CREATE INDEX idx_conversations_last_read_by_seller_id ON bitsbids.conversations (last_read_by_seller_id);
 CREATE INDEX idx_conversations_last_read_by_buyer_id ON bitsbids.conversations (last_read_by_buyer_id);
