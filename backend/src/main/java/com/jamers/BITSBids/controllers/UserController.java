@@ -1,6 +1,10 @@
 package com.jamers.BITSBids.controllers;
 
+import com.jamers.BITSBids.models.Conversation;
+import com.jamers.BITSBids.models.Product;
 import com.jamers.BITSBids.models.User;
+import com.jamers.BITSBids.repositories.ConversationRepository;
+import com.jamers.BITSBids.repositories.ProductRepository;
 import com.jamers.BITSBids.repositories.UserRepository;
 import com.jamers.BITSBids.request_models.UserCreateData;
 import com.jamers.BITSBids.request_models.UserEditData;
@@ -15,12 +19,10 @@ import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
+import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -31,10 +33,14 @@ import static com.jamers.BITSBids.common.Constants.INITIAL_BALANCE;
 public class UserController {
 	final DatabaseClient client;
 	final UserRepository userRepository;
+	final ConversationRepository conversationRepository;
+	final ProductRepository productRepository;
 
-	public UserController(DatabaseClient client, UserRepository userRepository) {
+	public UserController(DatabaseClient client, UserRepository userRepository, ConversationRepository conversationRepository, ProductRepository productRepository) {
 		this.client = client;
 		this.userRepository = userRepository;
+		this.conversationRepository = conversationRepository;
+		this.productRepository = productRepository;
 	}
 
 	@PostMapping(
@@ -156,7 +162,7 @@ public class UserController {
 		return new ResponseEntity<GenericResponseType>(new GenericResponseType(
 						currentUser,
 						GenericResponseType.ResponseStatus.SUCCESS
-		), HttpStatus.ACCEPTED);
+		), HttpStatus.OK);
 	}
 
 	@PostMapping(
@@ -187,7 +193,7 @@ public class UserController {
 											userRepository.delete(currentUser).block(),
 											GenericResponseType.ResponseStatus.SUCCESS
 							),
-							HttpStatus.ACCEPTED
+							HttpStatus.OK
 			);
 		}
 	}
@@ -207,7 +213,7 @@ public class UserController {
 						principal.getAttribute("email")).toString().isBlank()) {
 			return new ResponseEntity<GenericResponseType>(
 							new GenericResponseType(
-											UserCreateError.nullEmailError(),
+											AuthUserError.nullEmailError(),
 											GenericResponseType.ResponseStatus.ERROR
 							),
 							HttpStatus.BAD_REQUEST
@@ -253,7 +259,78 @@ public class UserController {
 		return new ResponseEntity<GenericResponseType>(new GenericResponseType(
 						userRepository.save(user).block(),
 						GenericResponseType.ResponseStatus.SUCCESS
-		), HttpStatus.ACCEPTED);
+		), HttpStatus.OK);
+	}
+
+	@GetMapping("/user/products")
+	public ResponseEntity<GenericResponseType> getUserProducts(
+					@AuthenticationPrincipal
+					OAuth2User principal,
+					@RequestParam(
+									name = "active",
+									required = true
+					)
+					boolean active) {
+		if (principal.getAttribute("email") == null || Objects.requireNonNull(principal.getAttribute("email")).toString().isEmpty() || Objects.requireNonNull(
+						principal.getAttribute("email")).toString().isBlank()) {
+			return new ResponseEntity<GenericResponseType>(
+							new GenericResponseType(
+											AuthUserError.nullEmailError(),
+											GenericResponseType.ResponseStatus.ERROR
+							),
+							HttpStatus.UNAUTHORIZED
+			);
+		}
+
+
+		final User currentUser = userRepository.findByEmail(Objects.requireNonNull(principal.getAttribute("email")).toString()).blockFirst();
+		if (currentUser == null) {
+			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+							AuthUserError.nullUserError(),
+							GenericResponseType.ResponseStatus.ERROR
+			), HttpStatus.BAD_REQUEST);
+		}
+		int userId = currentUser.id();
+
+		List<Product> products;
+		if (active) {
+			products = productRepository.findActiveProductsById(userId).collectList().block();
+		} else {
+			products = productRepository.findSoldProductsById(userId).collectList().block();
+		}
+		return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+						products,
+						GenericResponseType.ResponseStatus.SUCCESS
+		), HttpStatus.OK);
+	}
+
+	@GetMapping("/user/conversations")
+	public ResponseEntity<GenericResponseType> conversations(
+					@AuthenticationPrincipal
+					OAuth2User principal) {
+		if (principal.getAttribute("email") == null || Objects.requireNonNull(principal.getAttribute("email")).toString().isEmpty() || Objects.requireNonNull(
+						principal.getAttribute("email")).toString().isBlank()) {
+			return new ResponseEntity<GenericResponseType>(
+							new GenericResponseType(
+											AuthUserError.nullEmailError(),
+											GenericResponseType.ResponseStatus.ERROR
+							),
+							HttpStatus.BAD_REQUEST
+			);
+		}
+		final User currentUser = userRepository.findByEmail(Objects.requireNonNull(principal.getAttribute("email")).toString()).blockFirst();
+		if (currentUser == null) {
+			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+							AuthUserError.nullUserError(),
+							GenericResponseType.ResponseStatus.ERROR
+			), HttpStatus.BAD_REQUEST);
+		}
+
+		final List<Conversation> conversationList =
+						conversationRepository.findUserConversations(currentUser.id()).collectList().block();
+		return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+						conversationList,
+						GenericResponseType.ResponseStatus.SUCCESS
+		), HttpStatus.OK);
 	}
 }
-
