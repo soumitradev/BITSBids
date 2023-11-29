@@ -73,10 +73,12 @@ CREATE TABLE bitsbids.conversations
     id                     INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY NOT NULL,
     seller_id              INTEGER                                          NOT NULL,
     buyer_id               INTEGER                                          NOT NULL,
+    product_id             INTEGER                                          NOT NULL,
     last_read_by_seller_id INTEGER                                          NOT NULL,
     last_read_by_buyer_id  INTEGER                                          NOT NULL,
     CONSTRAINT fk_conversations_seller_id FOREIGN KEY (seller_id) REFERENCES bitsbids.users (id) ON DELETE CASCADE,
     CONSTRAINT fk_conversations_buyer_id FOREIGN KEY (buyer_id) REFERENCES bitsbids.users (id) ON DELETE CASCADE,
+    CONSTRAINT fk_conversations_product_id FOREIGN KEY (product_id) REFERENCES bitsbids.products (id) ON DELETE CASCADE,
     CONSTRAINT fk_conversations_last_read_by_seller_id FOREIGN KEY (last_read_by_seller_id) REFERENCES bitsbids.messages (id),
     CONSTRAINT fk_conversations_last_read_by_buyer_id FOREIGN KEY (last_read_by_buyer_id) REFERENCES bitsbids.messages (id)
 );
