@@ -209,7 +209,7 @@ public class ProductController {
 		return new ResponseEntity<GenericResponseType>(new GenericResponseType(
 						currentBid,
 						GenericResponseType.ResponseStatus.SUCCESS
-		), HttpStatus.ACCEPTED);
+		), HttpStatus.OK);
 
 	}
 
@@ -253,7 +253,7 @@ public class ProductController {
 											new CategorizedProduct(currentProduct, categories, bids),
 											GenericResponseType.ResponseStatus.SUCCESS
 							),
-							HttpStatus.ACCEPTED
+							HttpStatus.OK
 			);
 		}
 	}
@@ -300,7 +300,7 @@ public class ProductController {
 											productRepository.deleteById(String.valueOf(id)).block(),
 											GenericResponseType.ResponseStatus.SUCCESS
 							),
-							HttpStatus.ACCEPTED
+							HttpStatus.OK
 			);
 		} else {
 			return new ResponseEntity<GenericResponseType>(
