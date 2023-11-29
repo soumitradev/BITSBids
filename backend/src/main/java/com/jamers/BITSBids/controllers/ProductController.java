@@ -19,8 +19,8 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Objects;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import static com.jamers.BITSBids.common.Constants.MIN_BID_DELTA;
 
@@ -285,7 +285,7 @@ public class ProductController {
 		}
 	}
 
-	@GetMapping("/api/product/latest")
+	@GetMapping("/product/latest")
 	public ResponseEntity<GenericResponseType> getLatestProducts(
 					@AuthenticationPrincipal
 					OAuth2User principal) {
@@ -293,7 +293,7 @@ public class ProductController {
 						principal.getAttribute("email")).toString().isBlank()) {
 			return new ResponseEntity<GenericResponseType>(
 							new GenericResponseType(
-											AuthUserError.nullUserError(),
+											AuthUserError.nullEmailError(),
 											GenericResponseType.ResponseStatus.ERROR
 							),
 							HttpStatus.BAD_REQUEST

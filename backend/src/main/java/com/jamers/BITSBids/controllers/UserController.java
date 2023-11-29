@@ -1,9 +1,9 @@
 package com.jamers.BITSBids.controllers;
 
-import com.jamers.BITSBids.models.User;
 import com.jamers.BITSBids.models.Product;
-import com.jamers.BITSBids.repositories.UserRepository;
+import com.jamers.BITSBids.models.User;
 import com.jamers.BITSBids.repositories.ProductRepository;
+import com.jamers.BITSBids.repositories.UserRepository;
 import com.jamers.BITSBids.request_models.UserCreateData;
 import com.jamers.BITSBids.request_models.UserEditData;
 import com.jamers.BITSBids.response_types.GenericResponseType;
@@ -17,18 +17,13 @@ import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestParam;
-
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.ArrayList;
 
 import static com.jamers.BITSBids.common.Constants.INITIAL_BALANCE;
 
@@ -261,7 +256,7 @@ public class UserController {
 		), HttpStatus.ACCEPTED);
 	}
 
-	@GetMapping("/api/user/products")
+	@GetMapping("/user/products")
 	public ResponseEntity<GenericResponseType> getUserProducts(
 					@AuthenticationPrincipal
 					OAuth2User principal,
