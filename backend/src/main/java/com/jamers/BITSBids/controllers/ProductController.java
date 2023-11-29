@@ -19,7 +19,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import static com.jamers.BITSBids.common.Constants.MIN_BID_DELTA;
@@ -311,7 +311,7 @@ public class ProductController {
 			);
 
 		}
-		ArrayList<Product> latestProducts = productRepository.findLatestProducts().blockFirst();
+		final List<Product> latestProducts = productRepository.findLatestProducts().collectList().block();
 		return new ResponseEntity<GenericResponseType>(
 						new GenericResponseType(
 										latestProducts,

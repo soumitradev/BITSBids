@@ -20,7 +20,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -31,10 +31,12 @@ import static com.jamers.BITSBids.common.Constants.INITIAL_BALANCE;
 public class UserController {
 	final DatabaseClient client;
 	final UserRepository userRepository;
+	final ProductRepository productRepository;
 
-	public UserController(DatabaseClient client, UserRepository userRepository) {
+	public UserController(DatabaseClient client, UserRepository userRepository, ProductRepository productRepository) {
 		this.client = client;
 		this.userRepository = userRepository;
+		this.productRepository = productRepository;
 	}
 
 	@PostMapping(
@@ -260,7 +262,6 @@ public class UserController {
 	public ResponseEntity<GenericResponseType> getUserProducts(
 					@AuthenticationPrincipal
 					OAuth2User principal,
-					ProductRepository productRepository,
 					@RequestParam(
 									name = "active",
 									required = true
@@ -287,11 +288,11 @@ public class UserController {
 		}
 		int userId = currentUser.id();
 
-		ArrayList<Product> products;
+		List<Product> products;
 		if (active) {
-			products = productRepository.findActiveProductsById(userId).blockFirst();
+			products = productRepository.findActiveProductsById(userId).collectList().block();
 		} else {
-			products = productRepository.findSoldProductsById(userId).blockFirst();
+			products = productRepository.findSoldProductsById(userId).collectList().block();
 		}
 		return new ResponseEntity<GenericResponseType>(new GenericResponseType(
 						products,
