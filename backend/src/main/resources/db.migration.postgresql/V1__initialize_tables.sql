@@ -29,25 +29,10 @@ CREATE TABLE bitsbids.products
     CONSTRAINT check_media_too_long CHECK (ARRAY_LENGTH(media, 1) <= 10)
 );
 
-CREATE TABLE bitsbids.tags
-(
-    id   INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY NOT NULL,
-    name VARCHAR(50)                                      NOT NULL
-);
-
-CREATE TABLE bitsbids.product_tags
-(
-    id         INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY NOT NULL,
-    product_id INTEGER                                          NOT NULL,
-    tag_id     INTEGER                                          NOT NULL,
-    CONSTRAINT fk_product_tags_product_id FOREIGN KEY (product_id) REFERENCES bitsbids.products (id) ON DELETE CASCADE,
-    CONSTRAINT fk_product_tags_tag_id FOREIGN KEY (tag_id) REFERENCES bitsbids.tags (id)
-);
-
 CREATE TABLE bitsbids.categories
 (
     id   INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY NOT NULL,
-    name VARCHAR(50)                                      NOT NULL
+    name VARCHAR(50) UNIQUE                               NOT NULL
 );
 
 CREATE TABLE bitsbids.category_products
@@ -86,11 +71,11 @@ CREATE TABLE bitsbids.messages
 CREATE TABLE bitsbids.conversations
 (
     id                     INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY NOT NULL,
-    product_id             INTEGER                                          NOT NULL,
+    seller_id              INTEGER                                          NOT NULL,
     buyer_id               INTEGER                                          NOT NULL,
     last_read_by_seller_id INTEGER                                          NOT NULL,
     last_read_by_buyer_id  INTEGER                                          NOT NULL,
-    CONSTRAINT fk_conversations_product_id FOREIGN KEY (product_id) REFERENCES bitsbids.products (id) ON DELETE CASCADE,
+    CONSTRAINT fk_conversations_seller_id FOREIGN KEY (seller_id) REFERENCES bitsbids.users (id) ON DELETE CASCADE,
     CONSTRAINT fk_conversations_buyer_id FOREIGN KEY (buyer_id) REFERENCES bitsbids.users (id) ON DELETE CASCADE,
     CONSTRAINT fk_conversations_last_read_by_seller_id FOREIGN KEY (last_read_by_seller_id) REFERENCES bitsbids.messages (id),
     CONSTRAINT fk_conversations_last_read_by_buyer_id FOREIGN KEY (last_read_by_buyer_id) REFERENCES bitsbids.messages (id)
