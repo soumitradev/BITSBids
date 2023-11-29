@@ -1,9 +1,6 @@
 package com.jamers.BITSBids.response_types.errors;
 
-public class ProductFetchError {
-	public String error;
-	public String cause;
-
+public class ProductFetchError extends GenericError {
 	public static ProductFetchError invalidProductError() {
 		ProductFetchError error = new ProductFetchError();
 		error.error = "InvalidProductError";

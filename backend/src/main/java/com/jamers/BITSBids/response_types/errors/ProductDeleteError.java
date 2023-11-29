@@ -1,9 +1,6 @@
 package com.jamers.BITSBids.response_types.errors;
 
-public class ProductDeleteError {
-	public String error;
-	public String cause;
-
+public class ProductDeleteError extends GenericError {
 	public static ProductDeleteError notProductSellerError() {
 		ProductDeleteError error = new ProductDeleteError();
 		error.error = "notProductSellerError";
