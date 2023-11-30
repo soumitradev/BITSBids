@@ -384,6 +384,7 @@ public class ProductController {
 		}
 
 		Conversation conversation = conversationRepository.findByProductId(currentUser.id(), id).blockFirst();
+		List<Message> messages = messageRepository.findByConversationId(conversation.id()).collectList().block();
 
 		if (conversation == null) {
 			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
@@ -392,7 +393,7 @@ public class ProductController {
 			), HttpStatus.BAD_REQUEST);
 		} else {
 			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
-							conversation,
+							messages,
 							GenericResponseType.ResponseStatus.SUCCESS
 			), HttpStatus.ACCEPTED);
 		}
