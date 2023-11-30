@@ -7,14 +7,14 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - ./data:/var/lib/postgresql/data
+      - ./backend/data:/var/lib/postgresql/data
     profiles:
       - "migration"
       - "backend"
 
   app:
     build:
-      context: .
+      context: backend
       dockerfile: Dockerfile
     env_file:
       - .env
@@ -35,7 +35,7 @@ services:
       - postgres
     command: -url=jdbc:postgresql://postgres:5432/${POSTGRES_DB} -user=${POSTGRES_USER} -password=${POSTGRES_PASSWORD} -connectRetries=60 migrate
     volumes:
-      - ./src/main/resources/db.migration.postgresql:/flyway/sql
+      - ./backend/src/main/resources/db.migration.postgresql:/flyway/sql
     profiles:
       - "migration"
 
@@ -52,7 +52,7 @@ services:
           "--spider",
           "seaweedfs-master:9333/cluster/healthz",
         ]
-      interval: 10s
+      interval: 5s
       timeout: 30s
       retries: 3
     command: "master -ip=seaweedfs-master"
@@ -65,7 +65,7 @@ services:
       - 9334:9334
     command: 'volume -mserver="seaweedfs-master:9333" -port=9334 -dir=/data/seaweedfs/volume -ip=seaweedfs-volume'
     volumes:
-      - ./uploads:/data/seaweedfs/volume
+      - ./backend/uploads:/data/seaweedfs/volume
     depends_on:
       seaweedfs-master:
         condition: service_healthy
@@ -73,12 +73,14 @@ services:
       - "backend"
 
   nginx:
-    image: nginx:1.25.3-alpine-slim
+    build:
+      context: frontend
+      dockerfile: Dockerfile
     ports:
       - 80:80
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
-      - ./logs/nginx:/usr/log/
+      - ./frontend/nginx.conf:/etc/nginx/nginx.conf
+      - ./backend/logs/nginx:/usr/log/
     depends_on:
       - app
       - seaweedfs-master
