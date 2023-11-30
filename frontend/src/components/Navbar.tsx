@@ -20,6 +20,7 @@ import { useNavigate } from "@solidjs/router";
 import { Skeleton } from "./ui/skeleton";
 import SearchBar from "./Search";
 import ChatWindow from "./ChatWindow";
+import { ChatProvider } from "~/context/chat";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -97,7 +98,9 @@ const Navbar = () => {
             </Button>
           </PopoverTrigger>
           <PopoverContent class="mr-16 p-0 w-96">
-            <ChatWindow />
+            <ChatProvider>
+              <ChatWindow />
+            </ChatProvider>
           </PopoverContent>
         </Popover>
         <DropdownMenu>
