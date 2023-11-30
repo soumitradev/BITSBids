@@ -4,6 +4,7 @@ import com.jamers.BITSBids.models.*;
 import com.jamers.BITSBids.repositories.*;
 import com.jamers.BITSBids.request_models.BidCreateData;
 import com.jamers.BITSBids.request_models.MessageCreateData;
+import com.jamers.BITSBids.request_models.MessageReadData;
 import com.jamers.BITSBids.request_models.ProductCreateData;
 import com.jamers.BITSBids.response_models.CategorizedProduct;
 import com.jamers.BITSBids.response_types.GenericResponseType;
@@ -491,6 +492,101 @@ public class ProductController {
 
 		return new ResponseEntity<GenericResponseType>(new GenericResponseType(
 						messageRepository.save(message).block(),
+						GenericResponseType.ResponseStatus.SUCCESS
+		), HttpStatus.ACCEPTED);
+	}
+
+	@PostMapping("/product/{id}/readMessages")
+	public ResponseEntity<GenericResponseType> sendProductMessage(
+					@AuthenticationPrincipal
+					OAuth2User principal,
+					@PathVariable
+					int id,
+					@Validated
+					@RequestBody
+					MessageReadData messageReadData) {
+		if (principal.getAttribute("email") == null || Objects.requireNonNull(principal.getAttribute("email")).toString().isEmpty() || Objects.requireNonNull(
+						principal.getAttribute("email")).toString().isBlank()) {
+			return new ResponseEntity<GenericResponseType>(
+							new GenericResponseType(
+											AuthUserError.nullUserError(),
+											GenericResponseType.ResponseStatus.ERROR
+							),
+							HttpStatus.BAD_REQUEST
+			);
+		}
+		final User currentUser = userRepository.findByEmail(Objects.requireNonNull(principal.getAttribute("email")).toString()).blockFirst();
+
+		if (currentUser == null) {
+			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+							AuthUserError.nullUserError(),
+							GenericResponseType.ResponseStatus.ERROR
+			), HttpStatus.BAD_REQUEST);
+		}
+
+		final Product currentProduct = productRepository.findById(String.valueOf(id)).block();
+
+		if (currentProduct == null) {
+			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+							ProductFetchError.invalidProductError(),
+							GenericResponseType.ResponseStatus.ERROR
+			), HttpStatus.BAD_REQUEST);
+		}
+
+		Conversation conversation = conversationRepository.findByProductId(currentUser.id(), id).blockFirst();
+
+		if (conversation == null) {
+			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+							ConversationFetchError.invalidConversationError(),
+							GenericResponseType.ResponseStatus.ERROR
+			), HttpStatus.BAD_REQUEST);
+		}
+
+		if (messageReadData == null) {
+			return new ResponseEntity<GenericResponseType>(
+							new GenericResponseType(
+											MessageReadError.nullMessageError(),
+											GenericResponseType.ResponseStatus.ERROR
+							),
+							HttpStatus.BAD_REQUEST
+			);
+		}
+
+		Message message = messageRepository.findById(String.valueOf(messageReadData.messageId())).block();
+
+		if (message == null || message.conversationId() != conversation.id()) {
+			return new ResponseEntity<GenericResponseType>(
+							new GenericResponseType(
+											MessageReadError.invalidMessageError(),
+											GenericResponseType.ResponseStatus.ERROR
+							),
+							HttpStatus.BAD_REQUEST
+			);
+		}
+
+		Conversation newConversation;
+		if (currentUser.id() == conversation.buyerId()) {
+			newConversation = new Conversation(
+							conversation.id(),
+							conversation.sellerId(),
+							conversation.buyerId(),
+							conversation.productId(),
+							conversation.lastReadBySellerId(),
+							messageReadData.messageId()
+			);
+		} else {
+			newConversation = new Conversation(
+							conversation.id(),
+							conversation.sellerId(),
+							conversation.buyerId(),
+							conversation.productId(),
+							messageReadData.messageId(),
+							conversation.lastReadByBuyerId()
+			);
+		}
+
+		return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+						conversationRepository.save(newConversation).block(),
 						GenericResponseType.ResponseStatus.SUCCESS
 		), HttpStatus.ACCEPTED);
 	}
