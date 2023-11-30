@@ -17,18 +17,21 @@ const ConversationHolder = () => {
         </TabsTrigger>
       </TabsList>
       <TabsContent value="products" class="m-0">
-        <Card class="border-none flex flex-col rounded-md overflow-auto h-72">
+        <Card class="border-none flex flex-col rounded-md overflow-auto max-h-72">
           <ConversationBubble
+            id={1}
             title="Jaming Set"
             latestMessage="very surprising i know"
             unreadCount={2}
           />
           <ConversationBubble
+            id={2}
             title="Sword"
             latestMessage="You: i'll pop you ra too much cock you're showing ok"
             unreadCount={0}
           />
           <ConversationBubble
+            id={3}
             title="Bottle of Water"
             latestMessage="would you like my bo'oh'o'wa'er"
             unreadCount={3}
@@ -36,18 +39,21 @@ const ConversationHolder = () => {
         </Card>
       </TabsContent>
       <TabsContent value="buyers" class="m-0">
-        <Card class="border-none flex flex-col rounded-md">
+        <Card class="border-none flex flex-col rounded-md overflow-auto max-h-72">
           <ConversationBubble
+            id={4}
             title="Dosa Vada Pongal"
             latestMessage="very surprising i know"
             unreadCount={2}
           />
           <ConversationBubble
+            id={5}
             title="Sword"
             latestMessage="You: i'll pop you ra too much cock you're showing ok"
             unreadCount={0}
           />
           <ConversationBubble
+            id={6}
             title="Bottle of Water"
             latestMessage="would you like my bo'oh'o'wa'er"
             unreadCount={3}

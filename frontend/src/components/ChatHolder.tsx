@@ -4,13 +4,16 @@ import { Input } from "~/components/ui/input";
 import { BiRegularArrowBack } from "solid-icons/bi";
 import { BsSend } from "solid-icons/bs";
 import { Button } from "./ui/button";
+import { useChat } from "~/context/chat";
 
 const ChatHolder = () => {
+  const [state, { setChatId }] = useChat();
+
   return (
     <div class="flex flex-col py-2 h-96">
       <div class="flex flex-row items-center w-full gap-2 border-b px-2 pb-1">
-        <BiRegularArrowBack />
-        <Label class="text-lg font-semibold">Jaming Set</Label>
+        <BiRegularArrowBack onClick={() => setChatId(-1)} />
+        <Label class="text-lg font-semibold">Jaming Set {state.chatId}</Label>
       </div>
       <div class="p-2 flex flex-col overflow-auto gap-1.5">
         <MessageBubble
