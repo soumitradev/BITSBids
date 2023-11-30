@@ -1,0 +1,24 @@
+{
+	"name": "BITSBids",
+	"image": "mcr.microsoft.com/devcontainers/base:bullseye",
+	"features": {
+		"ghcr.io/devcontainers-contrib/features/pnpm:2": {}
+	},
+	"mounts": [
+		"source=bitsbids-pnpm-cache,target=/tmp/cache/pnpm,type=volume",
+		"source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,readonly,type=bind"
+	],
+	"otherPortsAttributes": {
+		"onAutoForward": "silent"
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"esbenp.prettier-vscode",
+				"bradlc.vscode-tailwindcss"
+			]
+		}
+	},
+	"remoteUser": "vscode",
+	"postCreateCommand": "bash .devcontainer/config.sh"
+}
