@@ -1,6 +1,6 @@
 // import { createSignal } from "solid-js";
 // import { Button } from "./components/ui/button";
-import Navbar from "./components/Navbar";
+import Navbar from "../components/Navbar";
 
 function Home() {
   // const [count, setCount] = createSignal(0);

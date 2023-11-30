@@ -24,6 +24,6 @@ public class SecurityConfig {
 											response.setStatus(401);
 										},
 										new RequestHeaderRequestMatcher("X-Requested-With", "BITSBids-Frontend")
-						)).httpBasic(Customizer.withDefaults()).build();
+						)).build();
 	}
 }
