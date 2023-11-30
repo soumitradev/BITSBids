@@ -30,7 +30,7 @@ const Navbar = () => {
       navigate("/");
     } else if (loggedIn.status === 200) {
       const user = await loggedIn.json();
-      setUserInitial(user.name[0]);
+      setUserInitial(user.data.name[0]);
     } else {
       showToast({
         title: "Server Error",
@@ -102,19 +102,31 @@ const Navbar = () => {
         <DropdownMenu>
           <DropdownMenuTrigger
             as={userInitial() ? Avatar : Skeleton}
-            class="md:h-12 md:w-20 h-10 w-16 p-0 rounded-full"
+            class={
+              userInitial()
+                ? "md:h-12 md:w-12 h-10 w-10"
+                : "md:h-12 md:w-20 h-10 w-16 rounded-full p-0"
+            }
           >
-            {userInitial() ?? <AvatarFallback>{userInitial()}</AvatarFallback>}
+            {userInitial() ? (
+              <AvatarFallback>{userInitial()}</AvatarFallback>
+            ) : (
+              <span></span>
+            )}
           </DropdownMenuTrigger>
-          <DropdownMenuContent class="w-48">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Account Settings</DropdownMenuItem>
-            <DropdownMenuItem>My Bids</DropdownMenuItem>
-            <DropdownMenuItem>My Products</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Logout</DropdownMenuItem>
-          </DropdownMenuContent>
+          {userInitial() ? (
+            <DropdownMenuContent class="w-48">
+              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>Account Settings</DropdownMenuItem>
+              <DropdownMenuItem>My Bids</DropdownMenuItem>
+              <DropdownMenuItem>My Products</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>Logout</DropdownMenuItem>
+            </DropdownMenuContent>
+          ) : (
+            <span></span>
+          )}
         </DropdownMenu>
       </div>
     </nav>

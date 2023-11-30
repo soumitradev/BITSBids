@@ -1,4 +1,4 @@
-const Mesh = () => {
+const Mesh = ({ className }: { className: string }) => {
   return (
     <svg
       width="4398"
@@ -6,7 +6,7 @@ const Mesh = () => {
       viewBox="0 0 4398 2162"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      class="-z-10 fixed xl:scale-90 scale-75 -left-[400%] md:-left-[200%] lg:-left-full xl:-left-[60%] md:-top-1/3 lg:-top-1/4 -top-1/2 -rotate-[6deg]"
+      class={className}
     >
       <g filter="url(#filter0_i_70_972)">
         <path

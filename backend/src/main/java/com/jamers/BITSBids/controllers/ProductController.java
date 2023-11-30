@@ -3,6 +3,8 @@ package com.jamers.BITSBids.controllers;
 import com.jamers.BITSBids.models.*;
 import com.jamers.BITSBids.repositories.*;
 import com.jamers.BITSBids.request_models.BidCreateData;
+import com.jamers.BITSBids.request_models.MessageCreateData;
+import com.jamers.BITSBids.request_models.MessageReadData;
 import com.jamers.BITSBids.request_models.ProductCreateData;
 import com.jamers.BITSBids.response_models.CategorizedProduct;
 import com.jamers.BITSBids.response_types.GenericResponseType;
@@ -15,8 +17,12 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static com.jamers.BITSBids.common.Constants.MIN_BID_DELTA;
@@ -30,15 +36,20 @@ public class ProductController {
 	final BidRepository bidRepository;
 	final CategoryRepository categoryRepository;
 	final ProductCategoryRepository productCategoryRepository;
+	final ConversationRepository conversationRepository;
+	final MessageRepository messageRepository;
+	final Map<String, HashSet<WebSocketSession>> sessions;
 
-	public ProductController(DatabaseClient client, ProductRepository productRepository, UserRepository userRepository, BidRepository bidRepository, CategoryRepository categoryRepository, ProductCategoryRepository productCategoryRepository) {
+	public ProductController(DatabaseClient client, ProductRepository productRepository, UserRepository userRepository, BidRepository bidRepository, CategoryRepository categoryRepository, ProductCategoryRepository productCategoryRepository, ConversationRepository conversationRepository, MessageRepository messageRepository, Map<String, HashSet<WebSocketSession>> sessions) {
 		this.client = client;
 		this.productRepository = productRepository;
 		this.userRepository = userRepository;
 		this.bidRepository = bidRepository;
 		this.categoryRepository = categoryRepository;
 		this.productCategoryRepository = productCategoryRepository;
-
+		this.conversationRepository = conversationRepository;
+		this.messageRepository = messageRepository;
+		this.sessions = sessions;
 	}
 
 	@PostMapping(
@@ -253,7 +264,7 @@ public class ProductController {
 											new CategorizedProduct(currentProduct, categories, bids),
 											GenericResponseType.ResponseStatus.SUCCESS
 							),
-							HttpStatus.ACCEPTED
+							HttpStatus.OK
 			);
 		}
 	}
@@ -300,7 +311,7 @@ public class ProductController {
 											productRepository.deleteById(String.valueOf(id)).block(),
 											GenericResponseType.ResponseStatus.SUCCESS
 							),
-							HttpStatus.ACCEPTED
+							HttpStatus.OK
 			);
 		} else {
 			return new ResponseEntity<GenericResponseType>(
@@ -338,4 +349,247 @@ public class ProductController {
 		);
 	}
 
+	@GetMapping("/product/{id}/messages")
+	public ResponseEntity<GenericResponseType> getProductMessages(
+					@AuthenticationPrincipal
+					OAuth2User principal,
+					@PathVariable
+					int id) {
+		if (principal.getAttribute("email") == null || Objects.requireNonNull(principal.getAttribute("email")).toString().isEmpty() || Objects.requireNonNull(
+						principal.getAttribute("email")).toString().isBlank()) {
+			return new ResponseEntity<GenericResponseType>(
+							new GenericResponseType(
+											AuthUserError.nullUserError(),
+											GenericResponseType.ResponseStatus.ERROR
+							),
+							HttpStatus.BAD_REQUEST
+			);
+		}
+		final User currentUser = userRepository.findByEmail(Objects.requireNonNull(principal.getAttribute("email")).toString()).blockFirst();
+
+		if (currentUser == null) {
+			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+							AuthUserError.nullUserError(),
+							GenericResponseType.ResponseStatus.ERROR
+			), HttpStatus.BAD_REQUEST);
+		}
+
+		final Product currentProduct = productRepository.findById(String.valueOf(id)).block();
+
+		if (currentProduct == null) {
+			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+							ProductFetchError.invalidProductError(),
+							GenericResponseType.ResponseStatus.ERROR
+			), HttpStatus.BAD_REQUEST);
+		}
+
+		Conversation conversation = conversationRepository.findByProductId(currentUser.id(), id).blockFirst();
+		List<Message> messages = messageRepository.findByConversationId(conversation.id()).collectList().block();
+
+		if (conversation == null) {
+			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+							ConversationFetchError.invalidConversationError(),
+							GenericResponseType.ResponseStatus.ERROR
+			), HttpStatus.BAD_REQUEST);
+		} else {
+			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+							messages,
+							GenericResponseType.ResponseStatus.SUCCESS
+			), HttpStatus.ACCEPTED);
+		}
+	}
+
+	@PostMapping("/product/{id}/send")
+	public ResponseEntity<GenericResponseType> sendProductMessage(
+					@AuthenticationPrincipal
+					OAuth2User principal,
+					@PathVariable
+					int id,
+					@Validated
+					@RequestBody
+					MessageCreateData messageCreateData) {
+		if (principal.getAttribute("email") == null || Objects.requireNonNull(principal.getAttribute("email")).toString().isEmpty() || Objects.requireNonNull(
+						principal.getAttribute("email")).toString().isBlank()) {
+			return new ResponseEntity<GenericResponseType>(
+							new GenericResponseType(
+											AuthUserError.nullUserError(),
+											GenericResponseType.ResponseStatus.ERROR
+							),
+							HttpStatus.BAD_REQUEST
+			);
+		}
+		final User currentUser = userRepository.findByEmail(Objects.requireNonNull(principal.getAttribute("email")).toString()).blockFirst();
+
+		if (currentUser == null) {
+			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+							AuthUserError.nullUserError(),
+							GenericResponseType.ResponseStatus.ERROR
+			), HttpStatus.BAD_REQUEST);
+		}
+
+		final Product currentProduct = productRepository.findById(String.valueOf(id)).block();
+
+		if (currentProduct == null) {
+			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+							ProductFetchError.invalidProductError(),
+							GenericResponseType.ResponseStatus.ERROR
+			), HttpStatus.BAD_REQUEST);
+		}
+
+		Conversation conversation = conversationRepository.findByProductId(currentUser.id(), id).blockFirst();
+
+		if (conversation == null) {
+			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+							ConversationFetchError.invalidConversationError(),
+							GenericResponseType.ResponseStatus.ERROR
+			), HttpStatus.BAD_REQUEST);
+		}
+
+		if (messageCreateData == null) {
+			return new ResponseEntity<GenericResponseType>(
+							new GenericResponseType(
+											MessageCreateError.nullMessageError(),
+											GenericResponseType.ResponseStatus.ERROR
+							),
+							HttpStatus.BAD_REQUEST
+			);
+		}
+
+		if ((messageCreateData.text() == null || messageCreateData.text().isEmpty() || messageCreateData.text().isBlank()) &&
+						(messageCreateData.media() == null || messageCreateData.media().isEmpty())) {
+			return new ResponseEntity<GenericResponseType>(
+							new GenericResponseType(
+											MessageCreateError.emptyMessageError(),
+											GenericResponseType.ResponseStatus.ERROR
+							),
+							HttpStatus.BAD_REQUEST
+			);
+		}
+
+		Message message = new Message(
+						null,
+						conversation.id(),
+						currentUser.id() == conversation.buyerId(),
+						messageCreateData.text(),
+						messageCreateData.media(),
+						null
+		);
+
+		User otherUser = userRepository.findById(String.valueOf(currentUser.id() == conversation.buyerId() ? conversation.sellerId() : conversation.buyerId())).block();
+		HashSet<WebSocketSession> otherSessions = sessions.get(otherUser.email());
+		if (otherSessions != null) {
+			try {
+				for (WebSocketSession otherSession : otherSessions) {
+					otherSession.sendMessage(new TextMessage(String.valueOf(conversation.id())));
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+								MessageCreateError.internalServerError(),
+								GenericResponseType.ResponseStatus.ERROR
+				), HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+		}
+
+		return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+						messageRepository.save(message).block(),
+						GenericResponseType.ResponseStatus.SUCCESS
+		), HttpStatus.ACCEPTED);
+	}
+
+	@PostMapping("/product/{id}/readMessages")
+	public ResponseEntity<GenericResponseType> sendProductMessage(
+					@AuthenticationPrincipal
+					OAuth2User principal,
+					@PathVariable
+					int id,
+					@Validated
+					@RequestBody
+					MessageReadData messageReadData) {
+		if (principal.getAttribute("email") == null || Objects.requireNonNull(principal.getAttribute("email")).toString().isEmpty() || Objects.requireNonNull(
+						principal.getAttribute("email")).toString().isBlank()) {
+			return new ResponseEntity<GenericResponseType>(
+							new GenericResponseType(
+											AuthUserError.nullUserError(),
+											GenericResponseType.ResponseStatus.ERROR
+							),
+							HttpStatus.BAD_REQUEST
+			);
+		}
+		final User currentUser = userRepository.findByEmail(Objects.requireNonNull(principal.getAttribute("email")).toString()).blockFirst();
+
+		if (currentUser == null) {
+			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+							AuthUserError.nullUserError(),
+							GenericResponseType.ResponseStatus.ERROR
+			), HttpStatus.BAD_REQUEST);
+		}
+
+		final Product currentProduct = productRepository.findById(String.valueOf(id)).block();
+
+		if (currentProduct == null) {
+			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+							ProductFetchError.invalidProductError(),
+							GenericResponseType.ResponseStatus.ERROR
+			), HttpStatus.BAD_REQUEST);
+		}
+
+		Conversation conversation = conversationRepository.findByProductId(currentUser.id(), id).blockFirst();
+
+		if (conversation == null) {
+			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+							ConversationFetchError.invalidConversationError(),
+							GenericResponseType.ResponseStatus.ERROR
+			), HttpStatus.BAD_REQUEST);
+		}
+
+		if (messageReadData == null) {
+			return new ResponseEntity<GenericResponseType>(
+							new GenericResponseType(
+											MessageReadError.nullMessageError(),
+											GenericResponseType.ResponseStatus.ERROR
+							),
+							HttpStatus.BAD_REQUEST
+			);
+		}
+
+		Message message = messageRepository.findById(String.valueOf(messageReadData.messageId())).block();
+
+		if (message == null || message.conversationId() != conversation.id()) {
+			return new ResponseEntity<GenericResponseType>(
+							new GenericResponseType(
+											MessageReadError.invalidMessageError(),
+											GenericResponseType.ResponseStatus.ERROR
+							),
+							HttpStatus.BAD_REQUEST
+			);
+		}
+
+		Conversation newConversation;
+		if (currentUser.id() == conversation.buyerId()) {
+			newConversation = new Conversation(
+							conversation.id(),
+							conversation.sellerId(),
+							conversation.buyerId(),
+							conversation.productId(),
+							conversation.lastReadBySellerId(),
+							messageReadData.messageId()
+			);
+		} else {
+			newConversation = new Conversation(
+							conversation.id(),
+							conversation.sellerId(),
+							conversation.buyerId(),
+							conversation.productId(),
+							messageReadData.messageId(),
+							conversation.lastReadByBuyerId()
+			);
+		}
+
+		return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+						conversationRepository.save(newConversation).block(),
+						GenericResponseType.ResponseStatus.SUCCESS
+		), HttpStatus.ACCEPTED);
+	}
 }
+
