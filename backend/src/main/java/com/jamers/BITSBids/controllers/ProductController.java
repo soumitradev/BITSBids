@@ -398,7 +398,7 @@ public class ProductController {
 		}
 	}
 
-	@GetMapping("/product/{id}/send")
+	@PostMapping("/product/{id}/send")
 	public ResponseEntity<GenericResponseType> sendProductMessage(
 					@AuthenticationPrincipal
 					OAuth2User principal,
