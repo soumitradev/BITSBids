@@ -8,12 +8,12 @@ import { Button } from "./ui/button";
 
 const ChatHolder = () => {
   return (
-    <div class="flex flex-col py-2">
+    <div class="flex flex-col py-2 h-96">
       <div class="flex flex-row items-center w-full gap-2 border-b px-2 pb-1">
         <BiRegularArrowBack />
         <Label class="text-lg font-semibold">Jaming Set</Label>
       </div>
-      <div class="p-2 flex flex-col gap-1.5">
+      <div class="p-2 flex flex-col overflow-auto gap-1.5">
         <MessageBubble
           text="lorem ipsum fedj wjf swjdf sjsd sjsd fsjf"
           timestamp="6:09 pm"

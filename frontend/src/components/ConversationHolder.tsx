@@ -17,7 +17,7 @@ const ConversationHolder = () => {
         </TabsTrigger>
       </TabsList>
       <TabsContent value="products" class="m-0">
-        <Card class="border-none flex flex-col rounded-md">
+        <Card class="border-none flex flex-col rounded-md overflow-auto h-72">
           <ConversationBubble
             title="Jaming Set"
             latestMessage="very surprising i know"
