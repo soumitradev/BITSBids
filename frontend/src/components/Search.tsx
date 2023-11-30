@@ -1,10 +1,10 @@
-import { For, Show, createResource, createSignal, onMount } from "solid-js";
+import { Show, createResource, createSignal, onMount } from "solid-js";
 import { isServer } from "solid-js/web";
-import { A } from "@solidjs/router";
+// import { A } from "@solidjs/router";
 
 import { As } from "@kobalte/core";
 import ShoSho from "shosho";
-import { TbCommand, TbHash, TbSearch } from "solid-icons/tb";
+import { TbCommand, TbSearch } from "solid-icons/tb";
 
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
