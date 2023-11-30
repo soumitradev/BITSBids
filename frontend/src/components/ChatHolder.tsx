@@ -1,5 +1,4 @@
 import MessageBubble from "./MessageBubble";
-import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 import { Label } from "./ui/label";
 import { Input } from "~/components/ui/input";
 import { BiRegularArrowBack } from "solid-icons/bi";

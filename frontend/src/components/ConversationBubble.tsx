@@ -1,4 +1,3 @@
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Label } from "./ui/label";
 import { Badge } from "./ui/badge";
 
