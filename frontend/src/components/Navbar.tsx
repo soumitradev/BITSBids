@@ -96,8 +96,7 @@ const Navbar = () => {
               </svg>
             </Button>
           </PopoverTrigger>
-          <PopoverContent class="mr-16 p-0">
-            {/* <Place chat in the popover here.> */}
+          <PopoverContent class="mr-16 p-0 w-96">
             <ChatWindow />
           </PopoverContent>
         </Popover>
