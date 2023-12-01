@@ -15,22 +15,24 @@ const ChatHolder = (props: { notification: number }) => {
   let inputRef: any;
   const sendMessage = async () => {
     const messageText = inputRef.value;
-    console.log(messageText);
-    const messageData = {
-      text: messageText,
-    };
-    const res = await fetch(`/api/product/${conversation.product.id}/send`, {
-      method: "POST",
-      body: JSON.stringify(messageData),
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    });
-    const { data } = await res.json();
-    //@ts-ignore
-    setMessages([...messages(), { ...data, sentAt: new Date() }]);
     inputRef.value = "";
+    if (messageText && !messageText.trim()) {
+      console.log(messageText);
+      const messageData = {
+        text: messageText,
+      };
+      const res = await fetch(`/api/product/${conversation.product.id}/send`, {
+        method: "POST",
+        body: JSON.stringify(messageData),
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      });
+      const { data } = await res.json();
+      //@ts-ignore
+      setMessages([...messages(), { ...data, sentAt: new Date() }]);
+    }
   };
 
   createEffect(() => {
