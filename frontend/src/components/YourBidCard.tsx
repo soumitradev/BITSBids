@@ -30,14 +30,14 @@ export default function YourBidCard(props: {
               : "text-[#921111]"
           } m-1 w-11/12`}
         >
-          B{props.yourBid}
+          &#8377;{props.yourBid}
         </div>
         <div class=" text-right text-xl text-[#7F8EA3] w-11/12 whitespace-nowrap">
           {props.bidTime.toLocaleString()}
         </div>
         <div class=" text-right text-xl text-[#7F8EA3] w-11/12">
           {props.yourBid >= props.currentBid ? "Outbids: " : "Outbid By: "}
-          {Math.abs(props.yourBid - props.currentBid)}
+          &#8377;{Math.abs(props.yourBid - props.currentBid)}
         </div>
       </div>
       <div class="basis-1/5 flex justify-center items-center m-1">
