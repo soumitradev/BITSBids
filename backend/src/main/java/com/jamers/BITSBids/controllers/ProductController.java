@@ -258,7 +258,7 @@ public class ProductController {
 			);
 		} else {
 			List<Bid> bids = bidRepository.getLastTenBids(id).collectList().block();
-			List<String> categories = categoryRepository.listProductCategories(id).collectList().block();
+			List<Category> categories = categoryRepository.listProductCategories(id).collectList().block();
 			return new ResponseEntity<GenericResponseType>(
 							new GenericResponseType(
 											new CategorizedProduct(currentProduct, categories, bids),
