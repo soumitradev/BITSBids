@@ -2,8 +2,11 @@ import { For, createSignal, onMount } from "solid-js";
 import ConversationBubble from "./ConversationBubble";
 import { Card } from "./ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "./ui/tabs";
+import { useChat } from "~/context/chat";
 
 const ConversationHolder = () => {
+  const [state, { setConversation }] = useChat();
+
   const [productConversations, setProductConversations] = createSignal([]);
   const [buyerConversations, setBuyerConversations] = createSignal([]);
 
@@ -25,7 +28,9 @@ const ConversationHolder = () => {
         console.log(messageData);
         c.messages = messageData;
         console.log(c);
+        setConversation(c);
       }
+      console.log(state);
       setBuyerConversations(data.filter((c: any) => c.sellerId === id));
       setProductConversations(data.filter((c: any) => c.buyerId === id));
     } else {
