@@ -8,11 +8,11 @@ const ConversationBubble = (props: {
   latestMessage: string;
   unreadCount: number;
 }) => {
-  const [_, { setChatId }] = useChat();
+  const [, { setChatId }] = useChat();
 
   return (
     <div
-      class="flex flex-row justify-between items-center gap-2 p-2 border-t bg-slate-900 hover:bg-slate-700"
+      class="flex flex-row justify-between items-center gap-2 p-2 border-t bg-slate-900 hover:bg-slate-700 cursor-pointer"
       onClick={() => setChatId(props.id)}
     >
       <div class="flex flex-col justify-self-start flex-grow mb-0.5">

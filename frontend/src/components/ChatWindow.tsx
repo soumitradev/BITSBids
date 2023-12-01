@@ -4,7 +4,8 @@ import ConversationHolder from "./ConversationHolder";
 import { useChat } from "~/context/chat";
 
 const ChatWindow = () => {
-  const [state, { setChatId }] = useChat();
+  const [state] = useChat();
+
   return (
     <Show when={state.chatId !== -1} fallback={<ConversationHolder />}>
       <ChatHolder />
