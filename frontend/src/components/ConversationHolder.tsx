@@ -88,7 +88,7 @@ const ConversationHolder = (props: { notification: number }) => {
         </TabsTrigger>
       </TabsList>
       <TabsContent value="products" class="m-0">
-        <Card class="border-none flex flex-col rounded-md overflow-auto max-h-72">
+        <Card class="border-none flex flex-col rounded-md overflow-auto max-h-72 min-h-[12rem]">
           <For each={productConversations()}>
             {(conversation: any) => (
               <ConversationBubble
@@ -114,7 +114,7 @@ const ConversationHolder = (props: { notification: number }) => {
         </Card>
       </TabsContent>
       <TabsContent value="buyers" class="m-0">
-        <Card class="border-none flex flex-col rounded-md overflow-auto max-h-72">
+        <Card class="border-none flex flex-col rounded-md overflow-auto max-h-72 min-h-[12rem]">
           <For each={buyerConversations()}>
             {(conversation: any) => (
               <ConversationBubble
