@@ -12,14 +12,16 @@ export default function YourBidCard(props: {
   // if you want bg colour bg-[#0F1629]
   return (
     <A
-      class="flex w-3/5 h-48 rounded-xl hover:bg-[#0F1629] justify-around border-2 gap-1 align-center"
+      class="flex w-3/5 h-48 rounded-xl hover:bg-[#0F1629] justify-around border-2 gap-1 items-center"
       href={`/products/${props.productId}`}
     >
-      <div class=" flex flex-col justify-center items-start basis-1/2 m-3 p-2">
-        <div class=" font-bold text-5xl m-1">
-          <h2>{props.name}</h2>
+      <div class="flex flex-col justify-center items-start basis-1/2 m-3 mb-4 p-2 max-w-[50%]">
+        <div class="font-bold text-5xl m-1 line-clamp-1 text-ellipsis">
+          {props.name}
         </div>
-        <div class="m-1 text-xl text-[#7F8EA3]">{props.description}</div>
+        <div class="m-1 text-xl text-[#7F8EA3] line-clamp-2 text-ellipsis">
+          {props.description}
+        </div>
       </div>
 
       <div class="flex flex-col justify-center items-center gap-1 basis-1/4 m-2 pb-3">
