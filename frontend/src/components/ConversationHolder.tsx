@@ -5,7 +5,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "./ui/tabs";
 import { useChat } from "~/context/chat";
 
 const ConversationHolder = () => {
-  const [state, { setConversation }] = useChat();
+  const [state, { setConversation, setUserId }] = useChat();
 
   const [productConversations, setProductConversations] = createSignal([]);
   const [buyerConversations, setBuyerConversations] = createSignal([]);
@@ -13,7 +13,7 @@ const ConversationHolder = () => {
   onMount(async () => {
     const user = await fetch("/api/user/me");
     const { id } = (await user.json()).data;
-
+    setUserId(id);
     const conversations = await fetch("/api/user/conversations");
     if (conversations.status == 200) {
       const { data } = await conversations.json();

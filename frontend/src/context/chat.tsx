@@ -3,6 +3,7 @@ import { createStore } from "solid-js/store";
 
 export type ChatContextState = {
   readonly chatId: number;
+  readonly userId: number;
   readonly conversations: {
     [id: number]: {
       id: number;
@@ -34,17 +35,23 @@ export type ChatContextValue = [
   actions: {
     setChatId: (chatId: number) => void;
     setConversation: (conversation: any) => void;
+    setUserId: (userId: any) => void;
   }
 ];
 
 export const ChatContext = createContext<ChatContextValue>([
-  { chatId: -1, conversations: {} },
-  { setChatId: () => undefined, setConversation: () => undefined },
+  { chatId: -1, userId: -1, conversations: {} },
+  {
+    setChatId: () => undefined,
+    setConversation: () => undefined,
+    setUserId: () => undefined,
+  },
 ]);
 
 export const ChatProvider: ParentComponent<{ chatId?: number }> = (props) => {
   const [state, setState] = createStore({
     chatId: props.chatId ?? -1,
+    userId: -1,
     conversations: {},
   });
 
@@ -54,9 +61,12 @@ export const ChatProvider: ParentComponent<{ chatId?: number }> = (props) => {
       ...c,
       [conversation.id]: conversation,
     }));
+  const setUserId = (userId: number) => setState("userId", userId);
 
   return (
-    <ChatContext.Provider value={[state, { setChatId, setConversation }]}>
+    <ChatContext.Provider
+      value={[state, { setChatId, setConversation, setUserId }]}
+    >
       {props.children}
     </ChatContext.Provider>
   );
