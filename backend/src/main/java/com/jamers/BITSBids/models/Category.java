@@ -4,5 +4,5 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
 @Table("categories")
-public record Category(@Id int id, String name) {
+public record Category(@Id int id, String image, String name) {
 }

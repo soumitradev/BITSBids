@@ -1,6 +1,5 @@
 import { onMount } from "solid-js";
-import Mesh from "./components/Mesh";
-import { A } from "@solidjs/router";
+import Mesh from "../components/Mesh";
 import { showToast } from "~/components/ui/toast";
 import { useNavigate } from "@solidjs/router";
 
@@ -22,11 +21,11 @@ function Login() {
 
   return (
     <>
-      <Mesh />
+      <Mesh className="-z-10 fixed xl:scale-90 scale-75 -left-[400%] md:-left-[200%] lg:-left-full xl:-left-[60%] md:-top-1/3 lg:-top-1/4 -top-1/2 -rotate-[6deg]" />
       <div class="text-center mt-20 overflow-hidden">
         <div class="flex flex-col items-center">
           <span class="md:text-6xl text-5xl font-extrabold">BITSBids</span>
-          <A
+          <a
             class="font-bold text-md w-fit mt-64 bg-slate-50 text-slate-900 rounded-lg p-2 px-3 flex"
             href="/api/oauth2/authorization/google"
           >
@@ -46,7 +45,7 @@ function Login() {
               <path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8" />
             </svg>
             Login with Google
-          </A>
+          </a>
         </div>
       </div>
     </>

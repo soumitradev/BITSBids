@@ -43,9 +43,9 @@ public class CategoryController {
 		if (principal.getAttribute("email") == null || Objects.requireNonNull(principal.getAttribute("email")).toString().isEmpty() || Objects.requireNonNull(
 						principal.getAttribute("email")).toString().isBlank()) {
 			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
-							AuthUserError.nullUserError(),
+							AuthUserError.nullEmailError(),
 							GenericResponseType.ResponseStatus.ERROR
-			), HttpStatus.BAD_REQUEST);
+			), HttpStatus.UNAUTHORIZED);
 		}
 
 		final User currentUser = userRepository.findByEmail(Objects.requireNonNull(principal.getAttribute("email")).toString()).blockFirst();
@@ -54,14 +54,14 @@ public class CategoryController {
 			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
 							AuthUserError.nullUserError(),
 							GenericResponseType.ResponseStatus.ERROR
-			), HttpStatus.BAD_REQUEST);
+			), HttpStatus.UNAUTHORIZED);
 		}
 
 		final List<Category> categories = categoryRepository.listCategories().collectList().block();
 		return new ResponseEntity<GenericResponseType>(new GenericResponseType(
 						categories,
 						GenericResponseType.ResponseStatus.SUCCESS
-		), HttpStatus.FOUND);
+		), HttpStatus.OK);
 	}
 
 
@@ -74,9 +74,9 @@ public class CategoryController {
 		if (principal.getAttribute("email") == null || Objects.requireNonNull(principal.getAttribute("email")).toString().isEmpty() || Objects.requireNonNull(
 						principal.getAttribute("email")).toString().isBlank()) {
 			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
-							AuthUserError.nullUserError(),
+							AuthUserError.nullEmailError(),
 							GenericResponseType.ResponseStatus.ERROR
-			), HttpStatus.BAD_REQUEST);
+			), HttpStatus.UNAUTHORIZED);
 		}
 
 		final User currentUser = userRepository.findByEmail(Objects.requireNonNull(principal.getAttribute("email")).toString()).blockFirst();
@@ -85,7 +85,7 @@ public class CategoryController {
 			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
 							AuthUserError.nullUserError(),
 							GenericResponseType.ResponseStatus.ERROR
-			), HttpStatus.BAD_REQUEST);
+			), HttpStatus.UNAUTHORIZED);
 		}
 
 		final Category currentCategory = categoryRepository.findById(String.valueOf(id)).block();
@@ -104,7 +104,7 @@ public class CategoryController {
 		return new ResponseEntity<GenericResponseType>(new GenericResponseType(
 						products,
 						GenericResponseType.ResponseStatus.SUCCESS
-		), HttpStatus.FOUND);
+		), HttpStatus.OK);
 	}
 
 }
