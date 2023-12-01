@@ -1,27 +1,11 @@
-// import { createSignal } from "solid-js";
-// import { Button } from "./components/ui/button";
 import ProductCard from "~/components/ProductCard";
 import Navbar from "../components/Navbar";
 import { showToast } from "~/components/ui/toast";
 import { For, createSignal, onMount } from "solid-js";
 import Spinner from "~/components/Spinner";
 import CategoryCard from "~/components/CategoryCard";
-
-interface Product {
-  name: string;
-  id: number;
-  price: number;
-  media: string[];
-  closedAt: Date;
-  createdAt: Date;
-}
-interface ProductBidPair {
-  product: Product;
-}
-interface Category {
-  id: number;
-  name: string;
-}
+import Product from "~/types/Product";
+import ProductBidPair from "~/types/ProductBidPair";
 
 function Home() {
   const [products, setProducts] = createSignal<Product[]>([]);
@@ -57,7 +41,7 @@ function Home() {
     if (categories.status === 200) {
       const data = await categories.json();
       setCategories(data.data);
-    } else if (bidProducts.status === 500) {
+    } else if (categories.status === 500) {
       showToast({
         title: "Server Error",
         description: "The server might be down",
@@ -72,7 +56,8 @@ function Home() {
       <div class="flex flex-col px-4 pt-4 w-full">
         {bidProducts().length ? (
           <div class="w-full overflow-x-auto no-scrollbar mb-6">
-            <span class="text-3xl font-bold">Active Bids</span>
+            <span class="lg:text-3xl text-2xl font-bold">Active Bids</span>
+
             <div class="flex space-x-2 pt-2 w-fit">
               <For each={bidProducts()} fallback={<Spinner />}>
                 {(item) => (
@@ -91,7 +76,7 @@ function Home() {
         ) : null}
         {products().length ? (
           <div class="w-full overflow-x-auto no-scrollbar mb-6">
-            <span class="text-3xl font-bold">Latest Products</span>
+            <span class="lg:text-3xl text-2xl font-bold">Latest Products</span>
             <div class="flex space-x-2 pt-2 w-fit">
               <For each={products()} fallback={<Spinner />}>
                 {(item) => (
@@ -110,7 +95,7 @@ function Home() {
         ) : null}
         {categories().length ? (
           <div class="w-full overflow-x-auto no-scrollbar mb-6">
-            <span class="text-3xl font-bold">Categories</span>
+            <span class="lg:text-3xl text-2xl font-bold">Categories</span>
             <div class="flex space-x-2 pt-2 w-fit">
               <For each={categories()} fallback={<Spinner />}>
                 {(item) => (

@@ -8,7 +8,7 @@ export default function CategoryCard(props: {
   return (
     <A
       class="flex flex-col w-56 h-60 rounded-lg border-2 gap-1 align-middle"
-      href={`/categoriee/${props.id}`}
+      href={`/categories/${props.id}`}
     >
       <img
         class="p-0 m-0 h-4/5 rounded-lg object-cover"
