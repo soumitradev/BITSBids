@@ -46,7 +46,7 @@ class ChatWebSocketHandler extends TextWebSocketHandler {
 
 	@Override
 	public void handleTextMessage(WebSocketSession session, TextMessage message) {
-		logger.info("Server received: {}", message);
+		logger.info("Server received from session {}: {}", session.getPrincipal().getName(), message);
 	}
 
 	@Override
