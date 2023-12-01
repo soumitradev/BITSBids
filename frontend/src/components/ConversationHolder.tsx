@@ -101,7 +101,13 @@ const ConversationHolder = (props: { notification: number }) => {
                     : "") +
                   conversation.messages[conversation.messages.length - 1].text
                 }
-                unreadCount={0}
+                unreadCount={
+                  conversation.messages.length -
+                  conversation.messages
+                    .map((msg: any) => msg.id)
+                    .indexOf(conversation.lastReadByBuyerId) -
+                  1
+                }
               />
             )}
           </For>
@@ -121,7 +127,13 @@ const ConversationHolder = (props: { notification: number }) => {
                     : "You: ") +
                   conversation.messages[conversation.messages.length - 1].text
                 }
-                unreadCount={0}
+                unreadCount={
+                  conversation.messages.length -
+                  conversation.messages
+                    .map((msg: any) => msg.id)
+                    .indexOf(conversation.lastReadBySellerId) -
+                  1
+                }
               />
             )}
           </For>
