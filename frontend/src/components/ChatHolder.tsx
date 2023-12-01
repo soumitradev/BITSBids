@@ -5,11 +5,37 @@ import { BiRegularArrowBack } from "solid-icons/bi";
 import { BsSend } from "solid-icons/bs";
 import { Button } from "./ui/button";
 import { useChat } from "~/context/chat";
-import { For, onMount } from "solid-js";
+import { For, createSignal } from "solid-js";
 
 const ChatHolder = () => {
   const [state, { setChatId }] = useChat();
   const conversation = state.conversations[state.chatId];
+  const [messages, setMessages] = createSignal(conversation.messages);
+
+  let inputRef: any;
+  const sendMessage = async () => {
+    const messageText = inputRef.value;
+    console.log(messageText);
+    const messageData = {
+      text: messageText,
+    };
+    const res = await fetch(`/api/product/${conversation.product.id}/send`, {
+      method: "POST",
+      body: JSON.stringify(messageData),
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    });
+
+    const req2 = await fetch(
+      `/api/product/${conversation.product.id}/messages`
+    );
+    const { data } = await req2.json();
+    setMessages(data);
+    inputRef.value = "";
+  };
+
   return (
     <div class="flex flex-col py-2 h-96">
       <div class="flex flex-row items-center w-full gap-2 border-b px-2 pb-1">
@@ -17,7 +43,7 @@ const ChatHolder = () => {
         <Label class="text-lg font-semibold">{conversation.product.name}</Label>
       </div>
       <div class="p-2 flex flex-col overflow-auto gap-1.5">
-        <For each={conversation.messages}>
+        <For each={messages()}>
           {(m: any) => (
             <MessageBubble
               text={m.text}
@@ -31,8 +57,17 @@ const ChatHolder = () => {
         </For>
       </div>
       <div class="flex flex-row px-2 gap-1 mt-1">
-        <Input placeholder="Message" class="focus-visible:ring-0" />
-        <Button type="submit" class="px-3" variant="secondary">
+        <Input
+          placeholder="Message"
+          class="focus-visible:ring-0"
+          ref={inputRef}
+        />
+        <Button
+          type="submit"
+          class="px-3"
+          variant="secondary"
+          onClick={() => sendMessage()}
+        >
           <BsSend size={20} />
         </Button>
       </div>
