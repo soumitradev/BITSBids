@@ -44,7 +44,7 @@ export default function SearchBar() {
 
   return (
     <Dialog onOpenChange={setIsOpen} open={isOpen()}>
-      <DialogTrigger asChild class="mr-4">
+      <DialogTrigger asChild class="mr-4 hidden sm:flex">
         <As
           component={Button}
           id="search-trigger"
@@ -60,6 +60,18 @@ export default function SearchBar() {
             <TbCommand size={16} />
             <span>K</span>
           </Badge>
+        </As>
+      </DialogTrigger>
+      <DialogTrigger
+        asChild
+        class="mr-2 md:w-10 md:h-10 h-8 w-8 p-0 sm:hidden flex"
+      >
+        <As
+          component={Button}
+          variant="secondary"
+          class="flex rounded-full p-0 px-3"
+        >
+          <TbSearch />
         </As>
       </DialogTrigger>
 
