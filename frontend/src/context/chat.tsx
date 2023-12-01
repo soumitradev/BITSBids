@@ -23,6 +23,7 @@ export type ChatContextState = {
           id: number;
           fromBuyer: boolean;
           text: string;
+          media: string[];
           sentAt: string;
         }
       ];

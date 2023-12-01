@@ -42,6 +42,8 @@ const Navbar = () => {
     }
   });
 
+  const [notification, setNotification] = createSignal(-1, { equals: false });
+
   let client = new WebSocket("ws://localhost:8080/api/chat");
 
   onMount(async () => {
@@ -49,7 +51,8 @@ const Navbar = () => {
       console.log("WebSocket Client Connected");
     };
     client.onmessage = (message: any) => {
-      console.log(message.data);
+      console.log("received: " + message.data);
+      setNotification(parseInt(message.data));
     };
     client.onclose = () => {
       console.log("WebSocket Client Disconnected");
@@ -118,7 +121,7 @@ const Navbar = () => {
           </PopoverTrigger>
           <PopoverContent class="mr-16 p-0 w-96">
             <ChatProvider>
-              <ChatWindow />
+              <ChatWindow notification={notification()} />
             </ChatProvider>
           </PopoverContent>
         </Popover>

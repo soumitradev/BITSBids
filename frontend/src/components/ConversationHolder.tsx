@@ -1,10 +1,10 @@
-import { For, createSignal, onMount } from "solid-js";
+import { For, createEffect, createSignal, on, onMount } from "solid-js";
 import ConversationBubble from "./ConversationBubble";
 import { Card } from "./ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "./ui/tabs";
 import { useChat } from "~/context/chat";
 
-const ConversationHolder = () => {
+const ConversationHolder = (props: { notification: number }) => {
   const [state, { setConversation, setUserId }] = useChat();
 
   const [productConversations, setProductConversations] = createSignal([]);
@@ -37,6 +37,42 @@ const ConversationHolder = () => {
       console.error(conversations);
     }
   });
+
+  createEffect(
+    on(
+      () => props.notification,
+      () => {
+        console.log("fin: " + props.notification);
+        const conversation = state.conversations[props.notification];
+        console.log(state.conversations, conversation);
+        if (conversation !== undefined) {
+          fetch(`/api/product/${conversation.product.id}/messages`).then(
+            (r) => {
+              r.json().then(({ data }) => {
+                console.log(data);
+                setConversation({
+                  ...conversation,
+                  messages: data,
+                });
+                setProductConversations(
+                  //@ts-ignore
+                  productConversations().map((c: any) =>
+                    c.id === conversation.id ? { ...c, messages: data } : c
+                  )
+                );
+                setBuyerConversations(
+                  //@ts-ignore
+                  buyerConversations().map((c: any) =>
+                    c.id === conversation.id ? { ...c, messages: data } : c
+                  )
+                );
+              });
+            }
+          );
+        }
+      }
+    )
+  );
 
   return (
     <Tabs defaultValue="products">
