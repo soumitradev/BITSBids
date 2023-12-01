@@ -27,12 +27,9 @@ const ChatHolder = () => {
         "Content-Type": "application/json",
       },
     });
-
-    const req2 = await fetch(
-      `/api/product/${conversation.product.id}/messages`
-    );
-    const { data } = await req2.json();
-    setMessages(data);
+    const { data } = await res.json();
+    //@ts-ignore
+    setMessages([...messages(), { ...data, sentAt: new Date() }]);
     inputRef.value = "";
   };
 
