@@ -31,8 +31,9 @@ CREATE TABLE bitsbids.products
 
 CREATE TABLE bitsbids.categories
 (
-    id   INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY NOT NULL,
-    name VARCHAR(50) UNIQUE                               NOT NULL
+    id    INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY NOT NULL,
+    image VARCHAR(255)                                     NOT NULL,
+    name  VARCHAR(50) UNIQUE                               NOT NULL
 );
 
 CREATE TABLE bitsbids.category_products
