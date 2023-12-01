@@ -80,7 +80,7 @@ public class ProductController {
 											AuthUserError.nullEmailError(),
 											GenericResponseType.ResponseStatus.ERROR
 							),
-							HttpStatus.BAD_REQUEST
+							HttpStatus.UNAUTHORIZED
 			);
 		}
 
@@ -90,7 +90,7 @@ public class ProductController {
 			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
 							AuthUserError.nullUserError(),
 							GenericResponseType.ResponseStatus.ERROR
-			), HttpStatus.BAD_REQUEST);
+			), HttpStatus.UNAUTHORIZED);
 		}
 
 		Product product = new Product(
@@ -148,9 +148,9 @@ public class ProductController {
 		if (principal.getAttribute("email") == null || Objects.requireNonNull(principal.getAttribute("email")).toString().isEmpty() || Objects.requireNonNull(
 						principal.getAttribute("email")).toString().isBlank()) {
 			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
-							AuthUserError.nullUserError(),
+							AuthUserError.nullEmailError(),
 							GenericResponseType.ResponseStatus.ERROR
-			), HttpStatus.BAD_REQUEST);
+			), HttpStatus.UNAUTHORIZED);
 		}
 
 		final User currentUser = userRepository.findByEmail(Objects.requireNonNull(principal.getAttribute("email")).toString()).blockFirst();
@@ -158,7 +158,7 @@ public class ProductController {
 			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
 							AuthUserError.nullUserError(),
 							GenericResponseType.ResponseStatus.ERROR
-			), HttpStatus.BAD_REQUEST);
+			), HttpStatus.UNAUTHORIZED);
 		}
 
 		final Product currentProduct = productRepository.findById(String.valueOf(id)).block();
@@ -233,9 +233,9 @@ public class ProductController {
 		if (principal.getAttribute("email") == null || Objects.requireNonNull(principal.getAttribute("email")).toString().isEmpty() || Objects.requireNonNull(
 						principal.getAttribute("email")).toString().isBlank()) {
 			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
-							AuthUserError.nullUserError(),
+							AuthUserError.nullEmailError(),
 							GenericResponseType.ResponseStatus.ERROR
-			), HttpStatus.BAD_REQUEST);
+			), HttpStatus.UNAUTHORIZED);
 		}
 		final User currentUser = userRepository.findByEmail(Objects.requireNonNull(principal.getAttribute("email")).toString()).blockFirst();
 
@@ -243,7 +243,7 @@ public class ProductController {
 			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
 							AuthUserError.nullUserError(),
 							GenericResponseType.ResponseStatus.ERROR
-			), HttpStatus.BAD_REQUEST);
+			), HttpStatus.UNAUTHORIZED);
 		}
 
 		final Product currentProduct = productRepository.findById(String.valueOf(id)).block();
@@ -279,9 +279,9 @@ public class ProductController {
 		if (principal.getAttribute("email") == null || Objects.requireNonNull(principal.getAttribute("email")).toString().isEmpty() || Objects.requireNonNull(
 						principal.getAttribute("email")).toString().isBlank()) {
 			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
-							AuthUserError.nullUserError(),
+							AuthUserError.nullEmailError(),
 							GenericResponseType.ResponseStatus.ERROR
-			), HttpStatus.BAD_REQUEST);
+			), HttpStatus.UNAUTHORIZED);
 		}
 
 		final User currentUser = userRepository.findByEmail(Objects.requireNonNull(principal.getAttribute("email")).toString()).blockFirst();
@@ -290,7 +290,7 @@ public class ProductController {
 			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
 							AuthUserError.nullUserError(),
 							GenericResponseType.ResponseStatus.ERROR
-			), HttpStatus.BAD_REQUEST);
+			), HttpStatus.UNAUTHORIZED);
 		}
 
 		final Product currentProduct = productRepository.findById(String.valueOf(id)).block();
@@ -335,7 +335,7 @@ public class ProductController {
 											AuthUserError.nullEmailError(),
 											GenericResponseType.ResponseStatus.ERROR
 							),
-							HttpStatus.BAD_REQUEST
+							HttpStatus.UNAUTHORIZED
 			);
 
 		}
@@ -359,10 +359,10 @@ public class ProductController {
 						principal.getAttribute("email")).toString().isBlank()) {
 			return new ResponseEntity<GenericResponseType>(
 							new GenericResponseType(
-											AuthUserError.nullUserError(),
+											AuthUserError.nullEmailError(),
 											GenericResponseType.ResponseStatus.ERROR
 							),
-							HttpStatus.BAD_REQUEST
+							HttpStatus.UNAUTHORIZED
 			);
 		}
 		final User currentUser = userRepository.findByEmail(Objects.requireNonNull(principal.getAttribute("email")).toString()).blockFirst();
@@ -371,7 +371,7 @@ public class ProductController {
 			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
 							AuthUserError.nullUserError(),
 							GenericResponseType.ResponseStatus.ERROR
-			), HttpStatus.BAD_REQUEST);
+			), HttpStatus.UNAUTHORIZED);
 		}
 
 		final Product currentProduct = productRepository.findById(String.valueOf(id)).block();
@@ -384,19 +384,19 @@ public class ProductController {
 		}
 
 		Conversation conversation = conversationRepository.findByProductId(currentUser.id(), id).blockFirst();
-		List<Message> messages = messageRepository.findByConversationId(conversation.id()).collectList().block();
-
 		if (conversation == null) {
 			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
 							ConversationFetchError.invalidConversationError(),
 							GenericResponseType.ResponseStatus.ERROR
 			), HttpStatus.BAD_REQUEST);
-		} else {
-			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
-							messages,
-							GenericResponseType.ResponseStatus.SUCCESS
-			), HttpStatus.ACCEPTED);
 		}
+
+		List<Message> messages = messageRepository.findByConversationId(conversation.id()).collectList().block();
+
+		return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+						messages,
+						GenericResponseType.ResponseStatus.SUCCESS
+		), HttpStatus.OK);
 	}
 
 	@PostMapping("/product/{id}/send")
@@ -412,10 +412,10 @@ public class ProductController {
 						principal.getAttribute("email")).toString().isBlank()) {
 			return new ResponseEntity<GenericResponseType>(
 							new GenericResponseType(
-											AuthUserError.nullUserError(),
+											AuthUserError.nullEmailError(),
 											GenericResponseType.ResponseStatus.ERROR
 							),
-							HttpStatus.BAD_REQUEST
+							HttpStatus.UNAUTHORIZED
 			);
 		}
 		final User currentUser = userRepository.findByEmail(Objects.requireNonNull(principal.getAttribute("email")).toString()).blockFirst();
@@ -424,7 +424,7 @@ public class ProductController {
 			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
 							AuthUserError.nullUserError(),
 							GenericResponseType.ResponseStatus.ERROR
-			), HttpStatus.BAD_REQUEST);
+			), HttpStatus.UNAUTHORIZED);
 		}
 
 		final Product currentProduct = productRepository.findById(String.valueOf(id)).block();
@@ -494,7 +494,7 @@ public class ProductController {
 		return new ResponseEntity<GenericResponseType>(new GenericResponseType(
 						messageRepository.save(message).block(),
 						GenericResponseType.ResponseStatus.SUCCESS
-		), HttpStatus.ACCEPTED);
+		), HttpStatus.OK);
 	}
 
 	@PostMapping("/product/{id}/readMessages")
@@ -510,10 +510,10 @@ public class ProductController {
 						principal.getAttribute("email")).toString().isBlank()) {
 			return new ResponseEntity<GenericResponseType>(
 							new GenericResponseType(
-											AuthUserError.nullUserError(),
+											AuthUserError.nullEmailError(),
 											GenericResponseType.ResponseStatus.ERROR
 							),
-							HttpStatus.BAD_REQUEST
+							HttpStatus.UNAUTHORIZED
 			);
 		}
 		final User currentUser = userRepository.findByEmail(Objects.requireNonNull(principal.getAttribute("email")).toString()).blockFirst();
@@ -522,7 +522,7 @@ public class ProductController {
 			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
 							AuthUserError.nullUserError(),
 							GenericResponseType.ResponseStatus.ERROR
-			), HttpStatus.BAD_REQUEST);
+			), HttpStatus.UNAUTHORIZED);
 		}
 
 		final Product currentProduct = productRepository.findById(String.valueOf(id)).block();
@@ -589,7 +589,7 @@ public class ProductController {
 		return new ResponseEntity<GenericResponseType>(new GenericResponseType(
 						conversationRepository.save(newConversation).block(),
 						GenericResponseType.ResponseStatus.SUCCESS
-		), HttpStatus.ACCEPTED);
+		), HttpStatus.OK);
 	}
 }
 
