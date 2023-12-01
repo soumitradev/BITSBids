@@ -25,18 +25,16 @@ export default function ProductCard({
   const handleDiff = () => {
     setCurrentDiff(currentDiff() - 1000);
     let output_diff: string = "";
-    if (Math.floor(currentDiff() / 3600000) > 0) {
-      output_diff = `Ends in ${Math.floor(
-        currentDiff() / 3600000
-      )}h ${Math.floor((currentDiff() % 3600000) / 60000)}min`;
-    } else if (Math.floor((currentDiff() % 3600000) / 60000) > 0) {
-      output_diff = `Ends in ${Math.floor(
-        (currentDiff() % 3600000) / 60000
-      )}min`;
-    } else if (Math.floor((currentDiff() % (3600000 * 60000)) / 1000) > 0) {
-      output_diff = `Ends in ${Math.floor(
-        (currentDiff() % (3600000 * 60000)) / 1000
-      )}sec`;
+
+    const diff = Math.floor(currentDiff() / 1000);
+    const hours = Math.floor(diff / (60 * 60));
+    const minutes = Math.floor((diff % (60 * 60)) / 60);
+    const seconds = Math.floor(diff % 60);
+
+    if (hours > 0 || minutes > 0 || seconds > 0) {
+      output_diff = `Ends in ${hours > 0 ? hours + "h" : ""} ${
+        minutes > 0 ? minutes + "m" : ""
+      } ${seconds > 0 ? seconds + "s" : ""}`;
     } else {
       output_diff = "Auction Closed";
     }
@@ -59,11 +57,9 @@ export default function ProductCard({
         <span class="font-bold">{name}</span>
         <Progress
           value={
-            currentDiff() < 0
-              ? 100
-              : 100 -
-                (currentDiff() * 100) /
-                  (closedAt.getTime() - createdAt.getTime())
+            100 -
+            (Math.max(0, currentDiff()) * 100) /
+              (closedAt.getTime() - createdAt.getTime())
           }
           class="my-1 mb-2"
         />
