@@ -54,12 +54,11 @@ const ConversationHolder = () => {
                 id={conversation.id}
                 title={conversation.product.name}
                 latestMessage={
-                  conversation.messages[conversation.messages.length - 1]
+                  (conversation.messages[conversation.messages.length - 1]
                     .fromBuyer
                     ? "You: "
-                    : "" +
-                      conversation.messages[conversation.messages.length - 1]
-                        .text
+                    : "") +
+                  conversation.messages[conversation.messages.length - 1].text
                 }
                 unreadCount={0}
               />
@@ -75,12 +74,11 @@ const ConversationHolder = () => {
                 id={conversation.id}
                 title={conversation.product.name}
                 latestMessage={
-                  conversation.messages[conversation.messages.length - 1]
+                  (conversation.messages[conversation.messages.length - 1]
                     .fromBuyer
                     ? ""
-                    : "You: " +
-                      conversation.messages[conversation.messages.length - 1]
-                        .text
+                    : "You: ") +
+                  conversation.messages[conversation.messages.length - 1].text
                 }
                 unreadCount={0}
               />
