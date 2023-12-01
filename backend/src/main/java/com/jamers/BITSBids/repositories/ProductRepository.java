@@ -13,6 +13,6 @@ public interface ProductRepository extends ReactiveCrudRepository<Product, Strin
 	@Query("SELECT * FROM bitsbids.products WHERE seller_id = :id AND sold = false")
 	Flux<Product> findActiveProductsById(int id);
 
-	@Query("SELECT * FROM bitsbids.products WHERE (EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) - EXTRACT(EPOCH FROM created_at)) < 10800")
+	@Query("SELECT * FROM bitsbids.products ORDER BY created_at DESC LIMIT 20")
 	Flux<Product> findLatestProducts();
 }
