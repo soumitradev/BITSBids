@@ -14,7 +14,7 @@ import {
   PopoverTrigger,
 } from "~/components/ui/popover";
 import { Button } from "./ui/button";
-import { createSignal, onMount } from "solid-js";
+import { createSignal, onCleanup, onMount } from "solid-js";
 import { showToast } from "./ui/toast";
 import { useNavigate } from "@solidjs/router";
 import { Skeleton } from "./ui/skeleton";
@@ -41,6 +41,25 @@ const Navbar = () => {
       });
     }
   });
+
+  let client = new WebSocket("ws://localhost:8080/api/chat");
+
+  onMount(async () => {
+    client.onopen = () => {
+      console.log("WebSocket Client Connected");
+    };
+    client.onmessage = (message: any) => {
+      console.log(message.data);
+    };
+    client.onclose = () => {
+      console.log("WebSocket Client Disconnected");
+    };
+    setInterval(() => {
+      client.send("ping");
+    }, 15000);
+  });
+
+  onCleanup(async () => client.close());
 
   return (
     <nav class="md:py-2 md:px-4 py-1 px-3 border-b-2 flex justify-between">
