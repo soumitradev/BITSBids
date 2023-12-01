@@ -1,8 +1,33 @@
+import { For, createSignal, onMount } from "solid-js";
 import ConversationBubble from "./ConversationBubble";
 import { Card } from "./ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "./ui/tabs";
 
 const ConversationHolder = () => {
+  const [productConversations, setProductConversations] = createSignal([]);
+  const [buyerConversations, setBuyerConversations] = createSignal([]);
+
+  onMount(async () => {
+    const user = await fetch("/api/user/me");
+    const { id } = (await user.json()).data;
+
+    const conversations = await fetch("/api/user/conversations");
+    if (conversations.status == 200) {
+      const { data } = await conversations.json();
+      for (const c of data) {
+        const req = await fetch(`/api/product/${c.productId}`);
+        const { data: productData } = await req.json();
+        console.log(productData);
+        c.product = productData.product;
+        console.log(c);
+      }
+      setBuyerConversations(data.filter((c: any) => c.sellerId === id));
+      setProductConversations(data.filter((c: any) => c.buyerId === id));
+    } else {
+      console.error(conversations);
+    }
+  });
+
   return (
     <Tabs defaultValue="products">
       <TabsList class="grid w-full grid-cols-2 rounded-b-none bg-slate-800 p-0">
@@ -18,46 +43,30 @@ const ConversationHolder = () => {
       </TabsList>
       <TabsContent value="products" class="m-0">
         <Card class="border-none flex flex-col rounded-md overflow-auto max-h-72">
-          <ConversationBubble
-            id={1}
-            title="Jaming Set"
-            latestMessage="very surprising i know"
-            unreadCount={2}
-          />
-          <ConversationBubble
-            id={2}
-            title="Sword"
-            latestMessage="You: i'll pop you ra too much cock you're showing ok"
-            unreadCount={0}
-          />
-          <ConversationBubble
-            id={3}
-            title="Bottle of Water"
-            latestMessage="would you like my bo'oh'o'wa'er"
-            unreadCount={3}
-          />
+          <For each={productConversations()}>
+            {(conversation: any) => (
+              <ConversationBubble
+                id={conversation.id}
+                title={conversation.product.name}
+                latestMessage="very surprising i know"
+                unreadCount={2}
+              />
+            )}
+          </For>
         </Card>
       </TabsContent>
       <TabsContent value="buyers" class="m-0">
         <Card class="border-none flex flex-col rounded-md overflow-auto max-h-72">
-          <ConversationBubble
-            id={4}
-            title="Dosa Vada Pongal"
-            latestMessage="very surprising i know"
-            unreadCount={2}
-          />
-          <ConversationBubble
-            id={5}
-            title="Sword"
-            latestMessage="You: i'll pop you ra too much cock you're showing ok"
-            unreadCount={0}
-          />
-          <ConversationBubble
-            id={6}
-            title="Bottle of Water"
-            latestMessage="would you like my bo'oh'o'wa'er"
-            unreadCount={3}
-          />
+          <For each={buyerConversations()}>
+            {(conversation: any) => (
+              <ConversationBubble
+                id={conversation.id}
+                title={conversation.product.name}
+                latestMessage="very surprising i know"
+                unreadCount={2}
+              />
+            )}
+          </For>
         </Card>
       </TabsContent>
     </Tabs>
