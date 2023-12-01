@@ -33,7 +33,7 @@ export default function YourBidCard(props: {
           B{props.yourBid}
         </div>
         <div class=" text-right text-xl text-[#7F8EA3] w-11/12 whitespace-nowrap">
-          1/1/1970 6:40:56 AM
+          {props.bidTime.toLocaleString()}
         </div>
         <div class=" text-right text-xl text-[#7F8EA3] w-11/12">
           {props.yourBid >= props.currentBid ? "Outbids: " : "Outbid By: "}
