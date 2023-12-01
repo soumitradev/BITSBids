@@ -16,7 +16,9 @@ const MessageBubble = (props: {
       <Label class="self-start leading-tight text-slate-200">
         {props.text}
       </Label>
-      <Label class="text-xs text-slate-400 self-end">{props.timestamp}</Label>
+      <Label class="text-xs text-slate-400 self-end">
+        {new Date(props.timestamp).toLocaleString()}
+      </Label>
     </div>
   );
 };
