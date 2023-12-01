@@ -33,6 +33,17 @@ const ChatHolder = (props: { notification: number }) => {
     inputRef.value = "";
   };
 
+  createEffect(() => {
+    fetch(`/api/product/${conversation.product.id}/readMessages`, {
+      method: "POST",
+      body: JSON.stringify({ messageId: messages()[messages().length - 1].id }),
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    });
+  });
+
   createEffect(
     on(
       () => props.notification,
