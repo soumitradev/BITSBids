@@ -5,10 +5,10 @@ import { BiRegularArrowBack } from "solid-icons/bi";
 import { BsSend } from "solid-icons/bs";
 import { Button } from "./ui/button";
 import { useChat } from "~/context/chat";
-import { For, createSignal } from "solid-js";
+import { For, createEffect, createSignal, on } from "solid-js";
 
-const ChatHolder = () => {
-  const [state, { setChatId }] = useChat();
+const ChatHolder = (props: { notification: number }) => {
+  const [state, { setChatId, setConversation }] = useChat();
   const conversation = state.conversations[state.chatId];
   const [messages, setMessages] = createSignal(conversation.messages);
 
@@ -32,6 +32,21 @@ const ChatHolder = () => {
     setMessages([...messages(), { ...data, sentAt: new Date() }]);
     inputRef.value = "";
   };
+
+  createEffect(
+    on(
+      () => props.notification,
+      () => {
+        if (props.notification != state.chatId) return;
+        fetch(`/api/product/${conversation.product.id}/messages`).then((raw) =>
+          raw.json().then(({ data }) => {
+            setMessages(data);
+            setConversation({ ...conversation, messages: data });
+          })
+        );
+      }
+    )
+  );
 
   return (
     <div class="flex flex-col py-2 h-96">

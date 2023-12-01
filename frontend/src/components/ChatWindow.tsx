@@ -11,7 +11,7 @@ const ChatWindow = (props: { notification: number }) => {
       when={state.chatId !== -1}
       fallback={<ConversationHolder notification={props.notification} />}
     >
-      <ChatHolder />
+      <ChatHolder notification={props.notification} />
     </Show>
   );
 };
