@@ -38,7 +38,9 @@ export default function YourBidCard(props: {
           {props.bidTime.toLocaleString()}
         </div>
         <div class=" text-right text-xl text-[#7F8EA3] w-11/12">
-          {props.yourBid >= props.currentBid ? "Outbids: " : "Outbid By: "}
+          {props.yourBid >= props.currentBid
+            ? "Outbids next by "
+            : "Outbid by "}
           &#8377;{Math.abs(props.yourBid - props.currentBid)}
         </div>
       </div>
@@ -46,7 +48,7 @@ export default function YourBidCard(props: {
         <img
           class="p-0 h-3/5 w-4/5 rounded object-fill"
           src={props.imgUrl}
-          alt="smtg"
+          alt="product image"
         />
       </div>
     </A>
