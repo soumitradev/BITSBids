@@ -19,6 +19,11 @@ const ConversationHolder = () => {
         const { data: productData } = await req.json();
         console.log(productData);
         c.product = productData.product;
+        // console.log(c);
+        const req2 = await fetch(`/api/product/${c.productId}/messages`);
+        const { data: messageData } = await req2.json();
+        console.log(messageData);
+        c.messages = messageData;
         console.log(c);
       }
       setBuyerConversations(data.filter((c: any) => c.sellerId === id));
@@ -48,8 +53,15 @@ const ConversationHolder = () => {
               <ConversationBubble
                 id={conversation.id}
                 title={conversation.product.name}
-                latestMessage="very surprising i know"
-                unreadCount={2}
+                latestMessage={
+                  conversation.messages[conversation.messages.length - 1]
+                    .fromBuyer
+                    ? "You: "
+                    : "" +
+                      conversation.messages[conversation.messages.length - 1]
+                        .text
+                }
+                unreadCount={0}
               />
             )}
           </For>
@@ -62,8 +74,15 @@ const ConversationHolder = () => {
               <ConversationBubble
                 id={conversation.id}
                 title={conversation.product.name}
-                latestMessage="very surprising i know"
-                unreadCount={2}
+                latestMessage={
+                  conversation.messages[conversation.messages.length - 1]
+                    .fromBuyer
+                    ? ""
+                    : "You: " +
+                      conversation.messages[conversation.messages.length - 1]
+                        .text
+                }
+                unreadCount={0}
               />
             )}
           </For>
