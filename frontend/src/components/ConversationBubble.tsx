@@ -8,7 +8,7 @@ const ConversationBubble = (props: {
   latestMessage: string;
   unreadCount: number;
 }) => {
-  const [, { setChatId }] = useChat();
+  const [_, { setChatId }] = useChat();
 
   return (
     <div
