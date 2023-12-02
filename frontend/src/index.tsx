@@ -31,6 +31,7 @@ render(
             <Route path="/home" component={Home} />
             <Route path="/details" component={UserDetails} />
             <Route path="/categories" component={Categories} />
+            <Route path="/categories/:id" component={CategoryPage} />
             <Route path="/bids" component={YourBids} />
             <Route path="/products" component={YourProducts} />
             <Route path="/profile" component={UserProfile} />
