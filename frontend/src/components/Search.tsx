@@ -130,7 +130,7 @@ export default function SearchBar() {
               {(item) => {
                 return (
                   <A
-                    href={"/product/" + item.id}
+                    href={"/products/" + item.id}
                     onclick={() => setIsOpen(false)}
                     class="duration-400 animate-in fade-in-0"
                   >
