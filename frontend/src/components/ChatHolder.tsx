@@ -5,7 +5,7 @@ import { BiRegularArrowBack } from "solid-icons/bi";
 import { BsSend } from "solid-icons/bs";
 import { Button } from "./ui/button";
 import { useChat } from "~/context/chat";
-import { For, createEffect, createSignal, on } from "solid-js";
+import { For, createEffect, createSignal, on, onMount } from "solid-js";
 
 const ChatHolder = (props: { notification: number }) => {
   const [state, { setChatId, setConversation }] = useChat();
@@ -16,24 +16,32 @@ const ChatHolder = (props: { notification: number }) => {
   const sendMessage = async () => {
     const messageText = inputRef.value;
     inputRef.value = "";
-    if (messageText && !messageText.trim()) {
-      console.log(messageText);
-      const messageData = {
-        text: messageText,
-      };
-      const res = await fetch(`/api/product/${conversation.product.id}/send`, {
-        method: "POST",
-        body: JSON.stringify(messageData),
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-      });
-      const { data } = await res.json();
-      //@ts-ignore
-      setMessages([...messages(), { ...data, sentAt: new Date() }]);
-    }
+    if (!messageText || !messageText.trim()) return;
+    console.log(messageText);
+    const messageData = {
+      text: messageText,
+    };
+    const res = await fetch(`/api/product/${conversation.product.id}/send`, {
+      method: "POST",
+      body: JSON.stringify(messageData),
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    });
+    const { data } = await res.json();
+    //@ts-ignore
+    setMessages([...messages(), { ...data, sentAt: new Date() }]);
   };
+
+  onMount(() => {
+    const element = document.getElementById(
+      conversation.product.sellerId === state.userId
+        ? `message-${conversation.lastReadBySellerId}`
+        : `message-${conversation.lastReadByBuyerId}`
+    );
+    element?.scrollIntoView({ behavior: "instant", block: "end" });
+  });
 
   createEffect(() => {
     fetch(`/api/product/${conversation.product.id}/readMessages`, {
@@ -45,6 +53,19 @@ const ChatHolder = (props: { notification: number }) => {
       },
     });
   });
+
+  createEffect(
+    on(
+      messages,
+      () => {
+        const element = document.getElementById(
+          `message-${messages()[messages().length - 1].id}`
+        );
+        element?.scrollIntoView({ behavior: "smooth", block: "end" });
+      },
+      { defer: true }
+    )
+  );
 
   createEffect(
     on(
@@ -71,6 +92,7 @@ const ChatHolder = (props: { notification: number }) => {
         <For each={messages()}>
           {(m: any) => (
             <MessageBubble
+              id={`message-${m.id}`}
               text={m.text}
               timestamp={m.sentAt}
               fromSelf={

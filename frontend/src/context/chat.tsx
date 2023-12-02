@@ -10,6 +10,8 @@ export type ChatContextState = {
       productId: number;
       buyerId: number;
       sellerId: number;
+      lastReadByBuyerId: number;
+      lastReadBySellerId: number;
       product: {
         id: number;
         name: string;
