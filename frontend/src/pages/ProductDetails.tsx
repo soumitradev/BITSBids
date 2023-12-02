@@ -7,7 +7,6 @@ import { Progress } from "~/components/ui/progress";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
