@@ -169,14 +169,15 @@ const AddProduct = () => {
                 enableDateInputField={true}
                 enableTimeView={true}
                 calendarResponse={() => {
-                  setDateTimeValue(
-                    new Date()
-                    // new Date(
-                    //   `${props.year}-${props.month}-${
-                    //     props.date
-                    //   }, ${props.time.replace(" ", "")}`
-                    // )
-                  );
+                  const cock = new Date();
+                  cock.setDate(new Date().getDate() + 1);
+                  setDateTimeValue(cock);
+
+                  // new Date(
+                  //   `${props.year}-${props.month}-${
+                  //     props.date
+                  //   }, ${props.time.replace(" ", "")}`
+                  // )
                 }}
               />
             </div>

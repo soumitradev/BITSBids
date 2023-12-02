@@ -25,38 +25,7 @@ const ProductDetails = () => {
   onMount(async () => {
     const res = await fetch(`/api/product/${productId}`);
     console.log(res);
-    // const { data: d } = await res.json();
-    const d = {
-      product: {
-        id: 7,
-        name: "young chinese boy",
-        description: "ilorem ipsum niger kill me please",
-        sellerId: 1,
-        media: [
-          "https://flowbite.s3.amazonaws.com/docs/gallery/square/image-1.jpg",
-          "https://flowbite.s3.amazonaws.com/docs/gallery/featured/image.jpg",
-          "https://flowbite.s3.amazonaws.com/docs/gallery/featured/image-3.jpg",
-          "https://flowbite.s3.amazonaws.com/docs/gallery/square/image-5.jpg",
-        ],
-        basePrice: 0,
-        autoSellPrice: null,
-        price: 69,
-        sold: true,
-        createdAt: "2023-12-01T10:55:22.045626Z",
-        closedAt: "2023-12-04T16:53:55.683Z",
-        currentBidId: 1,
-      },
-      Categories: [],
-      Bids: [
-        {
-          id: 1,
-          productId: 7,
-          bidderId: 2,
-          price: 69,
-          placedAt: "2023-12-01T11:18:00.587Z",
-        },
-      ],
-    };
+    const { data: d } = await res.json();
     console.log(d);
     setData(d);
     setPreview(d?.product?.media[0]);
