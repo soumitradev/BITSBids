@@ -67,7 +67,7 @@ public class UserController {
 											UserCreateError.nullUserError(),
 											GenericResponseType.ResponseStatus.ERROR
 							),
-							HttpStatus.BAD_REQUEST
+							HttpStatus.UNAUTHORIZED
 			);
 		}
 		if (principal.getAttribute("email") == null || Objects.requireNonNull(principal.getAttribute("email")).toString().isEmpty() || Objects.requireNonNull(
@@ -77,7 +77,7 @@ public class UserController {
 											UserCreateError.nullEmailError(),
 											GenericResponseType.ResponseStatus.ERROR
 							),
-							HttpStatus.BAD_REQUEST
+							HttpStatus.UNAUTHORIZED
 			);
 		}
 
@@ -88,7 +88,7 @@ public class UserController {
 											UserCreateError.nullNameError(),
 											GenericResponseType.ResponseStatus.ERROR
 							),
-							HttpStatus.BAD_REQUEST
+							HttpStatus.UNAUTHORIZED
 			);
 		}
 
@@ -185,7 +185,7 @@ public class UserController {
 											AuthUserError.nullEmailError(),
 											GenericResponseType.ResponseStatus.ERROR
 							),
-							HttpStatus.BAD_REQUEST
+							HttpStatus.UNAUTHORIZED
 			);
 		}
 		final User currentUser = userRepository.findByEmail(Objects.requireNonNull(principal.getAttribute("email")).toString()).blockFirst();
@@ -193,7 +193,7 @@ public class UserController {
 			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
 							AuthUserError.nullUserError(),
 							GenericResponseType.ResponseStatus.ERROR
-			), HttpStatus.BAD_REQUEST);
+			), HttpStatus.UNAUTHORIZED);
 		} else {
 			return new ResponseEntity<GenericResponseType>(
 							new GenericResponseType(
@@ -223,7 +223,7 @@ public class UserController {
 											AuthUserError.nullEmailError(),
 											GenericResponseType.ResponseStatus.ERROR
 							),
-							HttpStatus.BAD_REQUEST
+							HttpStatus.UNAUTHORIZED
 			);
 		}
 		final User currentUser = userRepository.findByEmail(Objects.requireNonNull(principal.getAttribute("email")).toString()).blockFirst();
@@ -231,7 +231,7 @@ public class UserController {
 			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
 							AuthUserError.nullUserError(),
 							GenericResponseType.ResponseStatus.ERROR
-			), HttpStatus.BAD_REQUEST);
+			), HttpStatus.UNAUTHORIZED);
 		}
 		if (userEditData == null) {
 			return new ResponseEntity<GenericResponseType>(
@@ -337,7 +337,7 @@ public class UserController {
 			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
 							AuthUserError.nullUserError(),
 							GenericResponseType.ResponseStatus.ERROR
-			), HttpStatus.BAD_REQUEST);
+			), HttpStatus.UNAUTHORIZED);
 		}
 		int userId = currentUser.id();
 
@@ -381,7 +381,7 @@ public class UserController {
 											AuthUserError.nullEmailError(),
 											GenericResponseType.ResponseStatus.ERROR
 							),
-							HttpStatus.BAD_REQUEST
+							HttpStatus.UNAUTHORIZED
 			);
 		}
 		final User currentUser = userRepository.findByEmail(Objects.requireNonNull(principal.getAttribute("email")).toString()).blockFirst();
@@ -389,7 +389,7 @@ public class UserController {
 			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
 							AuthUserError.nullUserError(),
 							GenericResponseType.ResponseStatus.ERROR
-			), HttpStatus.BAD_REQUEST);
+			), HttpStatus.UNAUTHORIZED);
 		}
 
 		final List<Conversation> conversationList =

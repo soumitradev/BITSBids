@@ -12,6 +12,7 @@ import Login from "./pages/Login";
 import Home from "./pages/Home";
 import { Toaster } from "~/components/ui/toast";
 import UserDetails from "./pages/UserDetails";
+import Categories from "./pages/Categories";
 
 render(
   () => (
@@ -24,6 +25,7 @@ render(
             <Route path="/" component={Login} />
             <Route path="/home" component={Home} />
             <Route path="/details" component={UserDetails} />
+            <Route path="/categories" component={Categories} />
           </Routes>
         </Router>
       </ColorModeProvider>
