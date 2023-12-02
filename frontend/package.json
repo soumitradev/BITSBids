@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@digichanges/solid-multiselect": "^0.0.10",
     "@kobalte/core": "^0.11.2",
     "@meilisearch/instant-meilisearch": "^0.13.6",
     "@solidjs/router": "^0.9.1",
@@ -16,10 +17,12 @@
     "autoprefixer": "^10.4.16",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
+    "date-time-picker-solid": "^1.1.1",
     "instantsearch.js": "^4.60.0",
     "lucide-solid": "^0.294.0",
     "postcss": "^8.4.31",
     "shosho": "^1.4.3",
+    "solid-dzone": "^1.0.0",
     "solid-icons": "^1.1.0",
     "solid-js": "^1.8.5",
     "tailwind-merge": "^2.0.0",
