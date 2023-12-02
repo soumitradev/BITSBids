@@ -1,6 +1,6 @@
 import Navbar from "../components/Navbar";
 import { showToast } from "~/components/ui/toast";
-import { createSignal, For, onMount } from "solid-js";
+import { createSignal, For, createEffect } from "solid-js";
 import ProductBidPair from "~/types/ProductBidPair.ts";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import Spinner from "~/components/Spinner.tsx";
@@ -12,7 +12,7 @@ function YourBids() {
     []
   );
 
-  onMount(async () => {
+  createEffect(async () => {
     const productBidPairs = await fetch(`api/user/bids?active=${active()}`);
     if (productBidPairs.status === 200) {
       console.log(productBidPairs);
