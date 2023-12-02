@@ -145,13 +145,19 @@ const Navbar = () => {
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem>
-                <A href="/profile">Account Settings</A>
+                <A href="/profile" class="w-full">
+                  Account Settings
+                </A>
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <A href="/bids">My Bids</A>
+                <A href="/bids" class="w-full">
+                  My Bids
+                </A>
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <A href="/products">My Products</A>
+                <A href="/products" class="w-full">
+                  My Products
+                </A>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem>Logout</DropdownMenuItem>
