@@ -77,7 +77,10 @@ const Navbar = () => {
         >
           Categories
         </A>
-        <Button class="font-bold md:ml-6 ml-3 py-2 h-fit px-3">
+        <Button
+          class="font-bold md:ml-6 ml-3 py-2 h-fit px-3"
+          onClick={() => navigate("/new")}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="16"

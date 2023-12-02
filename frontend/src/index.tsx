@@ -17,6 +17,7 @@ import UserProfile from "~/pages/UserProfile.tsx";
 import YourBids from "~/pages/YourBids.tsx";
 import YourProducts from "./pages/YourProducts";
 import CategoryPage from "./pages/CategoryPage";
+import AddProduct from "./pages/ListProduct";
 
 const storageManager = createLocalStorageManager(document.cookie);
 
@@ -31,6 +32,7 @@ render(
             <Route path="/" component={Login} />
             <Route path="/home" component={Home} />
             <Route path="/details" component={UserDetails} />
+            <Route path="/new" component={AddProduct} />
             <Route path="/categories" component={Categories} />
             <Route path="/categories/:id" component={CategoryPage} />
             <Route path="/bids" component={YourBids} />

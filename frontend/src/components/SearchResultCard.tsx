@@ -68,7 +68,7 @@ export default function SearchResultCard({
           class="my-1 mb-2 w-10/12"
         />
         <div class="flex gap-2 items-center">
-          <span class="font-bold text-lg ">R{price}</span>
+          <span class="font-bold text-lg ">&#8377{price}</span>
           <span class="text-gray-300 text-md font-light">{outputDiff()}</span>
         </div>
         <A
