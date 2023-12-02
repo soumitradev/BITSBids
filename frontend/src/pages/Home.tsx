@@ -102,7 +102,7 @@ function Home() {
                   <CategoryCard
                     id={item.id}
                     name={item.name}
-                    imgUrl={"http://localhost/f/6,17c83af8bd"}
+                    imgUrl={item.image}
                   />
                 )}
               </For>
