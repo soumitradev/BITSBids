@@ -16,6 +16,7 @@ import UserProfile from "~/pages/UserProfile.tsx";
 
 import YourBids from "~/pages/YourBids.tsx";
 import YourProducts from "./pages/YourProducts";
+import ProductDetails from "./pages/ProductDetails";
 import CategoryPage from "./pages/CategoryPage";
 import AddProduct from "./pages/ListProduct";
 
@@ -37,6 +38,7 @@ render(
             <Route path="/categories/:id" component={CategoryPage} />
             <Route path="/bids" component={YourBids} />
             <Route path="/products" component={YourProducts} />
+            <Route path="/products/:productId" component={ProductDetails} />
             <Route path="/profile" component={UserProfile} />
           </Routes>
         </Router>
