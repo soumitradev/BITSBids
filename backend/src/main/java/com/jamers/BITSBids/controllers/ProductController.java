@@ -199,7 +199,13 @@ public class ProductController {
 							HttpStatus.BAD_REQUEST
 			);
 		}
-
+		if (currentProduct.sold()) {
+			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+							BidCreateError.ProductSoldError(),
+							GenericResponseType.ResponseStatus.ERROR
+			),
+							HttpStatus.BAD_REQUEST);
+		}
 		if (bidCreateData == null) {
 			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
 							BidCreateError.nullBidError(),

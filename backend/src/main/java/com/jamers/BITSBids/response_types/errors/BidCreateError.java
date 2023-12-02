@@ -21,5 +21,12 @@ public class BidCreateError extends GenericError {
 		error.cause = "Internal server error while making bid";
 		return error;
 	}
+
+	public static BidCreateError ProductSoldError() {
+		BidCreateError error = new BidCreateError();
+		error.error = "ProductSoldError";
+		error.cause = "This product is already sold.";
+		return error;
+	}
 }
 
