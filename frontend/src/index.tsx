@@ -16,6 +16,7 @@ import UserProfile from "~/pages/UserProfile.tsx";
 
 import YourBids from "~/pages/YourBids.tsx";
 import YourProducts from "./pages/YourProducts";
+import CategoryPage from "./pages/CategoryPage";
 
 const storageManager = createLocalStorageManager(document.cookie);
 
