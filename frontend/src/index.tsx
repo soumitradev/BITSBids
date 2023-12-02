@@ -12,6 +12,8 @@ import Home from "./pages/Home";
 import { Toaster } from "~/components/ui/toast";
 import UserDetails from "./pages/UserDetails";
 import Categories from "./pages/Categories";
+import UserProfile from "~/pages/UserProfile.tsx";
+
 import YourBids from "~/pages/YourBids.tsx";
 import YourProducts from "./pages/YourProducts";
 
@@ -31,6 +33,7 @@ render(
             <Route path="/categories" component={Categories} />
             <Route path="/bids" component={YourBids} />
             <Route path="/products" component={YourProducts} />
+            <Route path="/profile" component={UserProfile} />
           </Routes>
         </Router>
       </ColorModeProvider>
