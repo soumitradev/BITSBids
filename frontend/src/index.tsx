@@ -14,7 +14,7 @@ import UserDetails from "./pages/UserDetails";
 import Categories from "./pages/Categories";
 import YourBids from "~/pages/YourBids.tsx";
 import YourProducts from "./pages/YourProducts";
-import Test from "./pages/Test";
+import ProductDetails from "./pages/ProductDetails";
 
 const storageManager = createLocalStorageManager(document.cookie);
 
@@ -32,6 +32,7 @@ render(
             <Route path="/categories" component={Categories} />
             <Route path="/bids" component={YourBids} />
             <Route path="/products" component={YourProducts} />
+            <Route path="/products/:productId" component={ProductDetails} />
           </Routes>
         </Router>
       </ColorModeProvider>
