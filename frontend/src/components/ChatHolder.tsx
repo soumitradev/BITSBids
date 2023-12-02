@@ -2,7 +2,7 @@ import MessageBubble from "./MessageBubble";
 import { Label } from "./ui/label";
 import { Input } from "~/components/ui/input";
 import { BiRegularArrowBack } from "solid-icons/bi";
-import { AiFillInfoCircle, AiOutlineInfoCircle } from "solid-icons/ai";
+import { AiOutlineInfoCircle } from "solid-icons/ai";
 import { BsSend } from "solid-icons/bs";
 import { Button } from "./ui/button";
 import { useChat } from "~/context/chat";
