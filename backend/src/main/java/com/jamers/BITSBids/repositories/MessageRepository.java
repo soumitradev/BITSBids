@@ -7,6 +7,6 @@ import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import reactor.core.publisher.Flux;
 
 public interface MessageRepository extends ReactiveCrudRepository<Message, String>, ReactiveQueryByExampleExecutor<Message> {
-	@Query("SELECT DISTINCT * FROM bitsbids.messages WHERE conversation_id = :conversationId")
+	@Query("SELECT DISTINCT * FROM bitsbids.messages WHERE conversation_id = :conversationId ORDER BY sent_at ASC")
 	Flux<Message> findByConversationId(int conversationId);
 }

@@ -87,3 +87,14 @@ services:
       - seaweedfs-volume
     profiles:
       - "backend"
+
+  search:
+    image: getmeili/meilisearch:v1.5.0
+    ports:
+      - 7700:7700
+    volumes:
+      - ./backend/meili_data:/meili_data
+    env_file:
+      - .env
+    profiles:
+      - "backend"

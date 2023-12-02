@@ -22,4 +22,10 @@ public class AuthUserError extends GenericError {
 		return error;
 	}
 
+	public static AuthUserError userAnonymityError() {
+		AuthUserError error = new AuthUserError();
+		error.error = "UserAnonymityError";
+		error.cause = "User is anonymous";
+		return error;
+	}
 }
