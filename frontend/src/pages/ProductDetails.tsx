@@ -83,7 +83,7 @@ const ProductDetails = () => {
         <Label class="mt-4 text-3xl font-bold">{data()?.product?.name}</Label>
         <Label class="text-lg text-slate-400 font-bold">
           {/* @ts-ignore */}
-          {data()?.Categories?.join(", ")}
+          {data()?.categories?.join(", ")}
         </Label>
       </div>
       <div class="flex flex-row mt-2 px-10 w-full gap-8">
@@ -167,8 +167,6 @@ const ProductDetails = () => {
           <Label class="pt-2 text-lg text-slate-400 self-start">
             {/* @ts-ignore */}
             {data()?.product?.description}
-            lorem ipsum you're moms fkse fdkseffnsefjf fdnfdd did dwks dkscd s
-            akdca vka d aias ak caksd ca ddkca adjjc ad cakdcadkdc adksd f
           </Label>
           {/* @ts-ignore */}
           <Button class="mt-4 font-bold text-black text-xl self-start">
