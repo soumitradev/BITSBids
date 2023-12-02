@@ -43,7 +43,7 @@ export default function YourProductCard({
 
   setInterval(handleDiff, 1000);
   return (
-    <div class="flex overflow-hidden xl:w-3/4 w-full md:h-48 h-36 rounded-lg border-2 gap-1 align-center justify-between">
+    <div class="flex overflow-hidden w-full md:h-48 h-36 rounded-lg border-2 gap-y-1 align-center justify-between">
       <div class="flex gap-2 self-stretch">
         <div class=" flex justify-start items-center m-0 min-w-[35%]">
           <img
