@@ -41,12 +41,12 @@ class ChatWebSocketHandler extends TextWebSocketHandler {
 
 		TextMessage message = new TextMessage(String.format("Connected to server from principal %s with id %s", principal.getName(), session.getId()));
 		logger.info("Server sends: {}", message);
-		session.sendMessage(message);
+//		session.sendMessage(message);
 	}
 
 	@Override
 	public void handleTextMessage(WebSocketSession session, TextMessage message) {
-		logger.info("Server received: {}", message);
+		logger.info("Server received from session {}: {}", session.getPrincipal().getName(), message);
 	}
 
 	@Override

@@ -15,4 +15,7 @@ public interface ProductRepository extends ReactiveCrudRepository<Product, Strin
 
 	@Query("SELECT * FROM bitsbids.products ORDER BY created_at DESC LIMIT 20")
 	Flux<Product> findLatestProducts();
+
+	@Query("SELECT * FROM bitsbids.products p JOIN bitsbids.bids b ON p.id = b.product_id WHERE (p.seller_id = :sellerId AND b.id = p.current_bid_id AND b.bidder_id = :buyerId AND p.sold = true);")
+	Flux<Product> findSoldProduct(int buyerId, int sellerId);
 }
