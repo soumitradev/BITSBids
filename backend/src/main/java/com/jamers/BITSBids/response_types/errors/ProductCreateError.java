@@ -14,4 +14,11 @@ public class ProductCreateError extends GenericError {
 		error.cause = "Category is invalid";
 		return error;
 	}
+
+	public static ProductCreateError meiliServerError() {
+		ProductCreateError error = new ProductCreateError();
+		error.error = "MeiliServerError";
+		error.cause = "Error adding product to MeiliSearch";
+		return error;
+	}
 }

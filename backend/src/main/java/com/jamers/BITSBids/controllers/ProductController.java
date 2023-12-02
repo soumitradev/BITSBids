@@ -1,5 +1,7 @@
 package com.jamers.BITSBids.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jamers.BITSBids.models.*;
 import com.jamers.BITSBids.repositories.*;
 import com.jamers.BITSBids.request_models.BidCreateData;
@@ -9,6 +11,10 @@ import com.jamers.BITSBids.request_models.ProductCreateData;
 import com.jamers.BITSBids.response_models.CategorizedProduct;
 import com.jamers.BITSBids.response_types.GenericResponseType;
 import com.jamers.BITSBids.response_types.errors.*;
+import com.meilisearch.sdk.Client;
+import com.meilisearch.sdk.Config;
+import com.meilisearch.sdk.Index;
+import com.meilisearch.sdk.exceptions.MeilisearchException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -62,7 +68,7 @@ public class ProductController {
 					OAuth2User principal,
 					@RequestBody
 					@Validated
-					ProductCreateData productCreateData) {
+					ProductCreateData productCreateData) throws MeilisearchException, JsonProcessingException {
 		if (productCreateData == null) {
 			return new ResponseEntity<GenericResponseType>(
 							new GenericResponseType(
@@ -108,6 +114,27 @@ public class ProductController {
 						null
 		);
 		Product currentProduct = productRepository.save(product).block();
+		Client client = new Client(new Config("http://search:7700", System.getenv("MEILI_MASTER_KEY")));
+		try {
+			Index index = client.index("products");
+			ObjectMapper mapper = new ObjectMapper();
+			String json = mapper.writeValueAsString(new MeiliSearchProduct(
+							currentProduct.id(),
+							currentProduct.name(),
+							currentProduct.description()
+			));
+			mapper.findAndRegisterModules();
+			index.addDocuments(json);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<GenericResponseType>(
+							new GenericResponseType(
+											ProductCreateError.meiliServerError(),
+											GenericResponseType.ResponseStatus.ERROR
+							),
+							HttpStatus.INTERNAL_SERVER_ERROR
+			);
+		}
 		for (String categoryName : productCreateData.category()) {
 			Category category = categoryRepository.getCategoryByName(categoryName).blockFirst();
 			if (category == null) {
@@ -172,7 +199,13 @@ public class ProductController {
 							HttpStatus.BAD_REQUEST
 			);
 		}
-
+		if (currentProduct.sold()) {
+			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+							BidCreateError.ProductSoldError(),
+							GenericResponseType.ResponseStatus.ERROR
+			),
+							HttpStatus.BAD_REQUEST);
+		}
 		if (bidCreateData == null) {
 			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
 							BidCreateError.nullBidError(),
@@ -306,6 +339,20 @@ public class ProductController {
 		}
 
 		if (currentUser.id() == currentProduct.sellerId()) {
+			Client client = new Client(new Config("http://search:7700", System.getenv("MEILI_MASTER_KEY")));
+			try {
+				Index index = client.index("products");
+				index.deleteDocument(String.valueOf(currentProduct.id()));
+			} catch (Exception e) {
+				e.printStackTrace();
+				return new ResponseEntity<GenericResponseType>(
+								new GenericResponseType(
+												ProductCreateError.meiliServerError(),
+												GenericResponseType.ResponseStatus.ERROR
+								),
+								HttpStatus.INTERNAL_SERVER_ERROR
+				);
+			}
 			return new ResponseEntity<GenericResponseType>(
 							new GenericResponseType(
 											productRepository.deleteById(String.valueOf(id)).block(),

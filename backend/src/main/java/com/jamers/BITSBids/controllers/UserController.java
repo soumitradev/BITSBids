@@ -11,6 +11,7 @@ import com.jamers.BITSBids.repositories.UserRepository;
 import com.jamers.BITSBids.request_models.UserCreateData;
 import com.jamers.BITSBids.request_models.UserEditData;
 import com.jamers.BITSBids.response_models.ProductBidPair;
+import com.jamers.BITSBids.response_models.UserDetails;
 import com.jamers.BITSBids.response_types.GenericResponseType;
 import com.jamers.BITSBids.response_types.errors.AuthUserError;
 import com.jamers.BITSBids.response_types.errors.BidFetchError;
@@ -396,6 +397,63 @@ public class UserController {
 						conversationRepository.findUserConversations(currentUser.id()).collectList().block();
 		return new ResponseEntity<GenericResponseType>(new GenericResponseType(
 						conversationList,
+						GenericResponseType.ResponseStatus.SUCCESS
+		), HttpStatus.OK);
+	}
+
+	@GetMapping("/user/{userId}")
+	public ResponseEntity<GenericResponseType> getUserDetails(
+					@AuthenticationPrincipal
+					OAuth2User principal,
+					@PathVariable
+					int userId) {
+		if (principal.getAttribute("email") == null || Objects.requireNonNull(principal.getAttribute("email")).toString().isEmpty() || Objects.requireNonNull(
+						principal.getAttribute("email")).toString().isBlank()) {
+			return new ResponseEntity<GenericResponseType>(
+							new GenericResponseType(
+											AuthUserError.nullEmailError(),
+											GenericResponseType.ResponseStatus.ERROR
+							),
+							HttpStatus.UNAUTHORIZED
+			);
+		}
+		final User currentUser = userRepository.findByEmail(Objects.requireNonNull(principal.getAttribute("email")).toString()).blockFirst();
+		if (currentUser == null) {
+			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+							AuthUserError.nullUserError(),
+							GenericResponseType.ResponseStatus.ERROR
+			), HttpStatus.UNAUTHORIZED);
+		}
+
+		
+		final User user = userRepository.findById(String.valueOf(userId)).block();
+		if (user == null) {
+			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+							AuthUserError.userNotFoundError(),
+							GenericResponseType.ResponseStatus.ERROR
+			), HttpStatus.NOT_FOUND);
+		}
+
+		Product product1 = productRepository.findSoldProduct(currentUser.id(), userId).blockFirst();
+		Product product2 = productRepository.findSoldProduct(userId, currentUser.id()).blockFirst();
+
+		if (product1 == null && product2 == null) {
+			return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+							AuthUserError.userAnonymityError(),
+							GenericResponseType.ResponseStatus.ERROR
+			), HttpStatus.FORBIDDEN);
+		}
+
+		UserDetails userDetails = new UserDetails(
+						user.name(),
+						user.email(),
+						user.phoneNumber(),
+						user.room(),
+						user.batch()
+		);
+
+		return new ResponseEntity<GenericResponseType>(new GenericResponseType(
+						userDetails,
 						GenericResponseType.ResponseStatus.SUCCESS
 		), HttpStatus.OK);
 	}

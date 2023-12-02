@@ -64,7 +64,7 @@ export default function ProductCard({
           class="my-1 mb-2"
         />
         <div class="flex gap-1 justify-between">
-          <span class="font-bold">R{price}</span>
+          <span class="font-bold">&#8377{price}</span>
           <span class="text-slate-400">{outputDiff()}</span>
         </div>
       </div>

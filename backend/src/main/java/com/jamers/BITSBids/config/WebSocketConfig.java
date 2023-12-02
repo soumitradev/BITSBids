@@ -23,6 +23,6 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
 	@Override
 	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-		registry.addHandler(new ChatWebSocketHandler(sessions), "/chat");
+		registry.addHandler(new ChatWebSocketHandler(sessions), "/chat").setAllowedOrigins("*");
 	}
 }

@@ -1,5 +1,6 @@
-import { A } from "@solidjs/router";
-import { createSignal } from "solid-js";
+import {A} from "@solidjs/router";
+import {createSignal} from "solid-js";
+import {showToast} from "~/components/ui/toast.tsx";
 
 export default function YourProductCard({
   productId,
@@ -99,7 +100,23 @@ export default function YourProductCard({
             </svg>
           </A>
           <hr class="w-full border-slate border-opacity-30" />
-          <A class="px-3 my-auto" href={`/product/${productId}/delete`}>
+          <div class="px-3 my-auto" onClick={async () => {
+            const response = await fetch(`/product/${productId}/delete`, {
+              method: "POST",
+              headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+              }
+            });
+            const data = await response.json()
+            if (response.status === 400) {
+              showToast({
+                title: "Bad Request",
+                description: data.data.error + ": " + data.data.cause,
+              });
+            }
+          }
+          }>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
@@ -121,7 +138,7 @@ export default function YourProductCard({
                 fill="#ce4040"
               ></path>
             </svg>
-          </A>
+          </div>
         </div>
       </div>
     </div>
