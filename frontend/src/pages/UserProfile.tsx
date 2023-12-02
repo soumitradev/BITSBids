@@ -60,10 +60,12 @@ function UserProfile() {
     return (
         <>
             <Navbar/>
-            <div class=" min-h-screen justify-around items-centre">
-                <div class="flex  insert-20 justify-around ">
-                    <div class="flex flex-col mx-10 justify-around items-center">
-                        <div></div>
+            <div class=" min-h-screen flex justify-around items-centre">
+                <div class="flex m-auto justify-between ">
+                    <div class="flex flex-col mx-40  items-center">
+                        <div>
+
+                        </div>
                         <div>
                         <span class="xl:text-3xl text-2xl ">
                         Personal Profile
@@ -100,14 +102,18 @@ function UserProfile() {
                         </div>
                     </div>
                     <div class="flex flex-col mx-10">
-                        <div class="text-3xl">Current Balance</div>
-                        <div></div>
+                        <div class="text-3xl my-4">Current Balance</div>
+                        <div class="text-3xl mx-2 my-4">B</div>
                         <div class="flex ">
-                            <div></div>
-                            <div></div>
+                            <div class="mx-2">
+                                <Button>Add</Button>
+                            </div>
+                            <div class="mx-2">
+                                <Button>Withdraw</Button>
+                            </div>
                         </div>
-                        <A href="/Home">View Listed Items</A>
-                        <A href={"/YourBids"}>View my bids</A>
+                        <A href="/Home" class="m-2">View Listed Items </A>
+                        <A href={"/YourBids"} class="m-2">View my bids </A>
 
 
                     </div>
