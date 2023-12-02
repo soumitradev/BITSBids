@@ -2,13 +2,20 @@ import MessageBubble from "./MessageBubble";
 import { Label } from "./ui/label";
 import { Input } from "~/components/ui/input";
 import { BiRegularArrowBack } from "solid-icons/bi";
+import { AiFillInfoCircle, AiOutlineInfoCircle } from "solid-icons/ai";
 import { BsSend } from "solid-icons/bs";
 import { Button } from "./ui/button";
 import { useChat } from "~/context/chat";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "~/components/ui/popover";
 import { For, createEffect, createSignal, on, onMount } from "solid-js";
 
 const ChatHolder = (props: { notification: number }) => {
   const [state, { setChatId, setConversation }] = useChat();
+  const [userDetails, setUserDetails] = createSignal(null);
   const conversation = state.conversations[state.chatId];
   const [messages, setMessages] = createSignal(conversation.messages);
 
@@ -41,6 +48,21 @@ const ChatHolder = (props: { notification: number }) => {
         : `message-${conversation.lastReadByBuyerId}`
     );
     element?.scrollIntoView({ behavior: "instant", block: "end" });
+  });
+
+  onMount(async () => {
+    const req = await fetch(
+      `/api/user/${(conversation.buyerId != state.userId
+        ? conversation.buyerId
+        : conversation.sellerId
+      ).toString()}`
+    );
+    console.log(req);
+    if (req.status == 200) {
+      const { data } = await req.json();
+      console.log(data);
+      setUserDetails(data);
+    }
   });
 
   createEffect(() => {
@@ -87,6 +109,33 @@ const ChatHolder = (props: { notification: number }) => {
       <div class="flex flex-row items-center w-full gap-2 border-b px-2 pb-1">
         <BiRegularArrowBack onClick={() => setChatId(-1)} />
         <Label class="text-lg font-semibold">{conversation.product.name}</Label>
+        {userDetails() && (
+          <Popover>
+            <PopoverTrigger>
+              <AiOutlineInfoCircle />
+            </PopoverTrigger>
+            <PopoverContent>
+              <div class="flex flex-col gap-1">
+                <p>
+                  {/* @ts-ignore */}
+                  <b>Name:</b> {userDetails()?.name}
+                </p>
+                <p>
+                  {/* @ts-ignore */}
+                  <b>Email:</b> {userDetails()?.email}
+                </p>
+                <p>
+                  {/* @ts-ignore */}
+                  <b>Phone Number:</b> {userDetails()?.phoneNumber}
+                </p>
+                <p>
+                  {/* @ts-ignore */}
+                  <b>Room:</b> {userDetails()?.room}
+                </p>
+              </div>
+            </PopoverContent>
+          </Popover>
+        )}
       </div>
       <div class="p-2 flex flex-col overflow-auto gap-1.5">
         <For each={messages()}>
